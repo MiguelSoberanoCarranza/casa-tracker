@@ -19,16 +19,27 @@
         <!-- Filtros -->
         <div class="filters">
           <input v-model="searchQuery" type="text" placeholder="Buscar prospectos..." class="search-input">
-          <select v-model="statusFilter" class="filter-select">
+          <select v-model="viewModeFilter" class="filter-select">
+            <option value="activos">Solo Activos</option>
+            <option value="todos">Todos los Estados</option>
+            <option value="finalizados">Solo Finalizados</option>
+          </select>
+          <select v-model="statusFilter" class="filter-select" v-if="viewModeFilter === 'todos'">
             <option value="">Todos los estados</option>
-            <option value="nuevo">Nuevo</option>
-            <option value="contactado">Contactado</option>
-            <option value="interesado">Interesado</option>
-            <option value="calificado">Calificado</option>
-            <option value="propuesta">Propuesta</option>
-            <option value="negociacion">Negociación</option>
-            <option value="vendido">Vendido</option>
-            <option value="perdido">Perdido</option>
+            <optgroup label="Estados Activos">
+              <option value="nuevo">Nuevo</option>
+              <option value="contactado">Contactado</option>
+              <option value="interesado">Interesado</option>
+              <option value="calificado">Calificado</option>
+              <option value="propuesta">Propuesta</option>
+              <option value="negociacion">Negociación</option>
+            </optgroup>
+            <optgroup label="Estados Finales">
+              <option value="vendido">Vendido</option>
+              <option value="perdido">Perdido</option>
+              <option value="inactivo">Inactivo</option>
+              <option value="no_interesado">No Interesado</option>
+            </optgroup>
           </select>
         </div>
 
@@ -68,7 +79,8 @@
       <!-- Formulario de Nuevo Prospecto -->
       <div v-if="activeTab === 'nuevo' || showAddForm" class="form-section">
         <h2>{{ selectedProspecto ? 'Editar Prospecto' : 'Nuevo Prospecto' }}</h2>
-        <ProspectoForm :prospecto="selectedProspecto" @saved="handleProspectoSaved" @cancel="handleFormCancel" />
+        <ProspectoForm :prospecto="selectedProspecto" @saved="handleProspectoSaved" @cancel="handleFormCancel"
+          @deleted="handleProspectoDeleted" />
       </div>
 
       <!-- Seguimientos -->
@@ -270,11 +282,25 @@
                   <label>Email:</label>
                   <span>{{ selectedProspecto.email || 'No disponible' }}</span>
                 </div>
-                <div class="info-item">
+                <div class="info-item status-selector-item">
                   <label>Estado:</label>
-                  <span :class="['status-badge', selectedProspecto.status]">
-                    {{ getStatusLabel(selectedProspecto.status) }}
-                  </span>
+                  <select v-model="selectedProspecto.status" @change="updateProspectoStatus"
+                    :class="['status-select', selectedProspecto.status]">
+                    <optgroup label="Estados Activos">
+                      <option value="nuevo">Nuevo</option>
+                      <option value="contactado">Contactado</option>
+                      <option value="interesado">Interesado</option>
+                      <option value="calificado">Calificado</option>
+                      <option value="propuesta">Propuesta</option>
+                      <option value="negociacion">Negociación</option>
+                    </optgroup>
+                    <optgroup label="Estados Finales">
+                      <option value="vendido">Vendido</option>
+                      <option value="perdido">Perdido</option>
+                      <option value="inactivo">Inactivo</option>
+                      <option value="no_interesado">No Interesado</option>
+                    </optgroup>
+                  </select>
                 </div>
               </div>
 
@@ -342,7 +368,7 @@
 
       <!-- Recordatorios -->
       <div v-if="activeTab === 'recordatorios'" class="recordatorios-section">
-        <Recordatorios />
+        <Recordatorios @openSeguimiento="handleOpenSeguimientoFromRecordatorio" />
       </div>
     </div>
   </div>
@@ -362,6 +388,7 @@ const activeTab = ref('prospectos')
 const showAddForm = ref(false)
 const searchQuery = ref('')
 const statusFilter = ref('')
+const viewModeFilter = ref('activos') // Por defecto mostrar solo activos
 const seguimientosFilter = ref('')
 const expandedSeguimientos = ref([])
 const viewMode = ref('cards') // 'cards' o 'list'
@@ -372,6 +399,19 @@ const seguimientosData = ref({}) // Cache de datos de seguimientos
 const filteredProspectos = computed(() => {
   let filtered = prospectos.value
 
+  // Filtrar por modo de vista
+  if (viewModeFilter.value === 'activos') {
+    // Solo mostrar estados activos
+    const estadosActivos = ['nuevo', 'contactado', 'interesado', 'calificado', 'propuesta', 'negociacion']
+    filtered = filtered.filter(p => estadosActivos.includes(p.status))
+  } else if (viewModeFilter.value === 'finalizados') {
+    // Solo mostrar estados finales
+    const estadosFinales = ['vendido', 'perdido', 'inactivo', 'no_interesado']
+    filtered = filtered.filter(p => estadosFinales.includes(p.status))
+  }
+  // Si es 'todos', no filtrar por estado aquí
+
+  // Filtro de búsqueda
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(p =>
@@ -382,7 +422,8 @@ const filteredProspectos = computed(() => {
     )
   }
 
-  if (statusFilter.value) {
+  // Filtro específico por estado (solo cuando se ve "todos")
+  if (viewModeFilter.value === 'todos' && statusFilter.value) {
     filtered = filtered.filter(p => p.status === statusFilter.value)
   }
 
@@ -392,6 +433,10 @@ const filteredProspectos = computed(() => {
 // Filtro y ordenamiento para prospectos en la sección de seguimientos
 const sortedProspectosForSeguimientos = computed(() => {
   let filtered = prospectos.value
+
+  // Solo mostrar prospectos activos en seguimientos
+  const estadosActivos = ['nuevo', 'contactado', 'interesado', 'calificado', 'propuesta', 'negociacion']
+  filtered = filtered.filter(p => estadosActivos.includes(p.status))
 
   // Aplicar filtros
   if (seguimientosFilter.value === 'alta_prioridad') {
@@ -457,11 +502,12 @@ const loadProspectos = async () => {
     }
 
 
-    // Filtrar prospectos por el agente actual
+    // Filtrar prospectos por el agente actual (todos los estados)
     const { data, error } = await supabase
       .from('prospectos')
       .select('*')
       .eq('agente_id', user.id)
+      .eq('activo', true) // Solo los que no fueron eliminados lógicamente
       .order('fecha_actualizacion', { ascending: false })
 
 
@@ -515,6 +561,82 @@ const handleFormCancel = () => {
   activeTab.value = 'prospectos' // Regresar a la vista de prospectos
 }
 
+const handleProspectoDeleted = () => {
+  try {
+    showAddForm.value = false
+    selectedProspecto.value = null
+    activeTab.value = 'prospectos' // Regresar a la vista de prospectos
+    loadProspectos() // Recargar la lista para reflejar la eliminación
+  } catch (error) {
+    console.error('Error al eliminar prospecto:', error)
+  }
+}
+
+const handleOpenSeguimientoFromRecordatorio = (prospectoData) => {
+  try {
+    console.log('🔄 Abriendo seguimiento desde recordatorio:', prospectoData)
+
+    // Buscar el prospecto completo en la lista actual
+    const prospectoCompleto = prospectos.value.find(p => p.id === prospectoData.id)
+
+    if (prospectoCompleto) {
+      // Si encontramos el prospecto completo, usarlo
+      selectedProspecto.value = prospectoCompleto
+    } else {
+      // Si no lo encontramos, usar los datos básicos
+      selectedProspecto.value = prospectoData
+    }
+
+    // Cambiar a la pestaña de detalles para mostrar el seguimiento
+    activeTab.value = 'detalles'
+
+    console.log('✅ Navegando a seguimiento del prospecto:', selectedProspecto.value.nombre)
+  } catch (error) {
+    console.error('Error abriendo seguimiento desde recordatorio:', error)
+  }
+}
+
+const updateProspectoStatus = async () => {
+  if (!selectedProspecto.value) return
+
+  try {
+    console.log('🔄 Actualizando estado del prospecto:', selectedProspecto.value.status)
+
+    const { error } = await supabase
+      .from('prospectos')
+      .update({
+        status: selectedProspecto.value.status,
+        fecha_actualizacion: new Date().toISOString()
+      })
+      .eq('id', selectedProspecto.value.id)
+
+    if (error) {
+      console.error('❌ Error actualizando estado:', error)
+      throw error
+    }
+
+    console.log('✅ Estado actualizado exitosamente')
+
+    // Actualizar también en la lista principal
+    const prospectoEnLista = prospectos.value.find(p => p.id === selectedProspecto.value.id)
+    if (prospectoEnLista) {
+      prospectoEnLista.status = selectedProspecto.value.status
+      prospectoEnLista.fecha_actualizacion = new Date().toISOString()
+    }
+
+    // Mostrar mensaje de confirmación
+    const estadoLabel = getStatusLabel(selectedProspecto.value.status)
+    console.log(`✅ Prospecto actualizado a: ${estadoLabel}`)
+
+  } catch (error) {
+    console.error('💥 Error actualizando estado del prospecto:', error)
+    alert('Error al actualizar el estado del prospecto. Por favor, intenta de nuevo.')
+
+    // Revertir el cambio en la interfaz si falló la actualización
+    await loadProspectos()
+  }
+}
+
 const handleNewProspecto = () => {
   try {
     // Prevenir doble click
@@ -543,7 +665,9 @@ const getStatusLabel = (status) => {
     propuesta: 'Propuesta',
     negociacion: 'Negociación',
     vendido: 'Vendido',
-    perdido: 'Perdido'
+    perdido: 'Perdido',
+    inactivo: 'Inactivo',
+    no_interesado: 'No Interesado'
   }
   return labels[status] || status
 }
@@ -717,13 +841,15 @@ const loadSeguimientosData = async () => {
       .from('seguimientos')
       .select(`
         *,
-        prospectos (
+        prospectos!inner (
           id,
           nombre,
-          apellido
+          apellido,
+          activo
         )
       `)
       .eq('agente_id', user.id)
+      .eq('prospectos.activo', true)
       .order('fecha_seguimiento', { ascending: false })
 
     if (error) throw error
@@ -938,6 +1064,16 @@ onUnmounted(() => {
 .status-badge.perdido {
   background: #ffebee;
   color: #d32f2f;
+}
+
+.status-badge.inactivo {
+  background: #f5f5f5;
+  color: #757575;
+}
+
+.status-badge.no_interesado {
+  background: #fff3e0;
+  color: #f57c00;
 }
 
 .prospecto-info {
@@ -1574,6 +1710,78 @@ onUnmounted(() => {
   font-weight: 600;
 }
 
+.status-selector-item {
+  align-items: center;
+}
+
+.status-select {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.status-select.nuevo {
+  border-color: #1976d2;
+  color: #1976d2;
+}
+
+.status-select.contactado {
+  border-color: #f57c00;
+  color: #f57c00;
+}
+
+.status-select.interesado {
+  border-color: #388e3c;
+  color: #388e3c;
+}
+
+.status-select.calificado {
+  border-color: #7b1fa2;
+  color: #7b1fa2;
+}
+
+.status-select.propuesta {
+  border-color: #fbc02d;
+  color: #fbc02d;
+}
+
+.status-select.negociacion {
+  border-color: #0288d1;
+  color: #0288d1;
+}
+
+.status-select.vendido {
+  border-color: #2e7d32;
+  color: #2e7d32;
+}
+
+.status-select.perdido {
+  border-color: #d32f2f;
+  color: #d32f2f;
+}
+
+.status-select.inactivo {
+  border-color: #757575;
+  color: #757575;
+}
+
+.status-select.no_interesado {
+  border-color: #f57c00;
+  color: #f57c00;
+}
+
 .id-text {
   font-family: monospace;
   font-size: 0.9rem;
@@ -1886,6 +2094,19 @@ onUnmounted(() => {
 
   .seguimientos-section-detalle {
     padding: 20px;
+  }
+
+  .status-selector-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .status-select {
+    width: 100%;
+    min-width: auto;
+    font-size: 16px;
+    /* Previene zoom en iOS */
   }
 }
 </style>

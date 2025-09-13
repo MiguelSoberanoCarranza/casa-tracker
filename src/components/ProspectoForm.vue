@@ -104,14 +104,20 @@
             <div class="form-group">
               <label for="status">Estado Actual</label>
               <select v-model="form.status" id="status" class="form-input">
-                <option value="nuevo">Nuevo</option>
-                <option value="contactado">Contactado</option>
-                <option value="interesado">Interesado</option>
-                <option value="calificado">Calificado</option>
-                <option value="propuesta">Propuesta</option>
-                <option value="negociacion">Negociación</option>
-                <option value="vendido">Vendido</option>
-                <option value="perdido">Perdido</option>
+                <optgroup label="Estados Activos">
+                  <option value="nuevo">Nuevo</option>
+                  <option value="contactado">Contactado</option>
+                  <option value="interesado">Interesado</option>
+                  <option value="calificado">Calificado</option>
+                  <option value="propuesta">Propuesta</option>
+                  <option value="negociacion">Negociación</option>
+                </optgroup>
+                <optgroup label="Estados Finales">
+                  <option value="vendido">Vendido</option>
+                  <option value="perdido">Perdido</option>
+                  <option value="inactivo">Inactivo</option>
+                  <option value="no_interesado">No Interesado</option>
+                </optgroup>
               </select>
             </div>
             <div class="form-group">
@@ -153,6 +159,16 @@
         <button type="button" @click="$emit('cancel')" class="btn-secondary">
           Cancelar
         </button>
+        <button v-if="prospecto" type="button" @click="deleteProspecto" class="btn-danger"
+          :disabled="loading || isSubmitting">
+          <span v-if="loading || isSubmitting">
+            <span class="spinner"></span>
+            Eliminando...
+          </span>
+          <span v-else>
+            🗑️ Eliminar
+          </span>
+        </button>
         <button type="submit" :disabled="loading || isSubmitting" class="btn-primary" @click="preventDoubleSubmit">
           <span v-if="loading || isSubmitting">
             <span class="spinner"></span>
@@ -178,7 +194,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['saved', 'cancel'])
+const emit = defineEmits(['saved', 'cancel', 'deleted'])
 
 const loading = ref(false)
 const isSubmitting = ref(false)
@@ -306,6 +322,7 @@ const saveProspecto = async () => {
         .from('prospectos')
         .select('id, nombre, apellido, email, telefono')
         .eq('agente_id', form.agente_id)
+        .eq('activo', true)
         .eq('nombre', form.nombre)
         .eq('apellido', form.apellido)
         .or(`email.eq.${form.email},telefono.eq.${form.telefono}`)
@@ -362,6 +379,43 @@ const getInterestLabel = (score) => {
     4: 'Muy Alto'
   }
   return labels[score] || 'Bajo'
+}
+
+// Función para eliminar prospecto (borrado lógico)
+const deleteProspecto = async () => {
+  if (!props.prospecto) {
+    return
+  }
+
+  // Confirmar eliminación
+  const confirmDelete = confirm(`¿Estás seguro de que quieres eliminar el prospecto "${props.prospecto.nombre} ${props.prospecto.apellido}"?\n\nEsta acción puede deshacerse más tarde.`)
+
+  if (!confirmDelete) {
+    return
+  }
+
+  loading.value = true
+  isSubmitting.value = true
+
+  try {
+    const { error } = await supabase
+      .from('prospectos')
+      .update({
+        activo: false,
+        fecha_actualizacion: new Date().toISOString()
+      })
+      .eq('id', props.prospecto.id)
+
+    if (error) throw error
+
+    // Emitir evento de eliminación exitosa
+    emit('deleted')
+  } catch (error) {
+    alert('Error al eliminar el prospecto. Por favor, intenta de nuevo.')
+  } finally {
+    loading.value = false
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -489,14 +543,19 @@ const getInterestLabel = (score) => {
 }
 
 .btn-primary,
-.btn-secondary {
+.btn-secondary,
+.btn-danger {
   padding: 12px 25px;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: none;
+  border: 2px solid transparent;
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .btn-primary {
@@ -551,6 +610,26 @@ const getInterestLabel = (score) => {
   border-color: #d0d0d0;
 }
 
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+  border: 2px solid #dc3545;
+}
+
+.btn-danger:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+  border-color: #c82333;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+}
+
 /* Tablet (768px - 1024px) */
 @media (max-width: 1024px) and (min-width: 769px) {
   .form-row {
@@ -573,7 +652,8 @@ const getInterestLabel = (score) => {
   }
 
   .btn-primary,
-  .btn-secondary {
+  .btn-secondary,
+  .btn-danger {
     padding: 10px 20px;
     font-size: 0.9rem;
   }
@@ -600,7 +680,8 @@ const getInterestLabel = (score) => {
   }
 
   .btn-primary,
-  .btn-secondary {
+  .btn-secondary,
+  .btn-danger {
     width: 100%;
     padding: 12px 20px;
     font-size: 0.9rem;
@@ -668,7 +749,8 @@ const getInterestLabel = (score) => {
   }
 
   .btn-primary,
-  .btn-secondary {
+  .btn-secondary,
+  .btn-danger {
     width: 100%;
     padding: 12px 16px;
     font-size: 0.9rem;
@@ -717,7 +799,8 @@ const getInterestLabel = (score) => {
   }
 
   .btn-primary,
-  .btn-secondary {
+  .btn-secondary,
+  .btn-danger {
     padding: 10px 14px;
     font-size: 0.85rem;
   }

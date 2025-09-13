@@ -69,6 +69,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../lib/supabase.js'
 
+const emit = defineEmits(['openSeguimiento'])
+
 const recordatorios = ref([])
 const loading = ref(false)
 const activeFilter = ref('todos')
@@ -113,10 +115,12 @@ const loadRecordatorios = async () => {
       .from('seguimientos')
       .select(`
         id,
+        prospecto_id,
         proxima_accion_fecha,
         proxima_accion_tipo,
         proxima_accion,
         prospectos!inner (
+          id,
           nombre,
           apellido,
           email,
@@ -136,6 +140,7 @@ const loadRecordatorios = async () => {
     // Transformar los datos para que coincidan con la estructura esperada
     recordatorios.value = (data || []).map(item => ({
       seguimiento_id: item.id,
+      prospecto_id: item.prospecto_id,
       proxima_accion_fecha: item.proxima_accion_fecha,
       proxima_accion_tipo: item.proxima_accion_tipo,
       proxima_accion: item.proxima_accion,
@@ -159,6 +164,13 @@ const completarRecordatorio = async (seguimientoId) => {
   try {
     console.log('🔄 Completando recordatorio:', seguimientoId)
 
+    // Primero obtener la información del prospecto antes de actualizar
+    const recordatorio = recordatorios.value.find(r => r.seguimiento_id === seguimientoId)
+    if (!recordatorio) {
+      console.error('❌ No se encontró el recordatorio')
+      return
+    }
+
     const { error } = await supabase
       .from('seguimientos')
       .update({
@@ -174,6 +186,18 @@ const completarRecordatorio = async (seguimientoId) => {
     }
 
     console.log('✅ Recordatorio completado')
+
+    // Crear objeto prospecto para pasar al seguimiento
+    const prospectoParaSeguimiento = {
+      id: recordatorio.prospecto_id,
+      nombre: recordatorio.prospecto_nombre,
+      apellido: recordatorio.prospecto_apellido,
+      email: recordatorio.prospecto_email,
+      telefono: recordatorio.prospecto_telefono
+    }
+
+    // Emitir evento para abrir seguimiento
+    emit('openSeguimiento', prospectoParaSeguimiento)
 
     // Recargar recordatorios
     await loadRecordatorios()

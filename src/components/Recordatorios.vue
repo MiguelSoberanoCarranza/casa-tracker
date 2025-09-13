@@ -26,8 +26,10 @@
             <div class="prospecto-info">
               <h4>{{ recordatorio.prospecto_nombre }} {{ recordatorio.prospecto_apellido }}</h4>
               <p class="contacto">
-                📧 {{ recordatorio.prospecto_email || 'Sin email' }} |
-                📱 {{ recordatorio.prospecto_telefono || 'Sin teléfono' }}
+                <Mail size="14" />
+                {{ recordatorio.prospecto_email || 'Sin email' }} |
+                <Phone size="14" />
+                {{ recordatorio.prospecto_telefono || 'Sin teléfono' }}
               </p>
             </div>
             <div class="fecha-info">
@@ -42,21 +44,24 @@
 
           <div class="recordatorio-content">
             <div class="accion-info">
-              <span class="tipo-icon">{{ getTipoIcon(recordatorio.proxima_accion_tipo) }}</span>
+              <component :is="getTipoIcon(recordatorio.proxima_accion_tipo)" class="tipo-icon" size="16" />
               <span class="tipo-text">{{ getTipoLabel(recordatorio.proxima_accion_tipo) }}</span>
             </div>
             <p class="descripcion">{{ recordatorio.proxima_accion }}</p>
             <div v-if="recordatorio.agente_nombre" class="agente-info">
-              👤 {{ recordatorio.agente_nombre }}
+              <User size="14" />
+              {{ recordatorio.agente_nombre }}
             </div>
           </div>
 
           <div class="recordatorio-actions">
             <button @click="completarRecordatorio(recordatorio.seguimiento_id)" class="btn-completar">
-              ✅ Completar
+              <CheckCircle size="14" />
+              Completar
             </button>
             <button @click="editarRecordatorio(recordatorio)" class="btn-editar">
-              ✏️ Editar
+              <Edit3 size="14" />
+              Editar
             </button>
           </div>
         </div>
@@ -68,6 +73,20 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '../lib/supabase.js'
+
+// Importar iconos de Lucide
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  User,
+  CheckCircle,
+  Edit3,
+  PhoneCall,
+  MessageSquare,
+  Home
+} from 'lucide-vue-next'
 
 const emit = defineEmits(['openSeguimiento'])
 
@@ -249,13 +268,13 @@ const getNoRecordatoriosMessage = () => {
 
 const getTipoIcon = (tipo) => {
   const icons = {
-    llamada: '📞',
-    email: '📧',
-    visita: '🏠',
-    mensaje: '💬',
-    reunion: '🤝'
+    llamada: PhoneCall,
+    email: Mail,
+    visita: Home,
+    mensaje: MessageSquare,
+    reunion: User
   }
-  return icons[tipo] || '📝'
+  return icons[tipo] || MessageSquare
 }
 
 const getTipoLabel = (tipo) => {
@@ -397,6 +416,14 @@ onMounted(async () => {
   margin: 0;
   color: #666;
   font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.contacto svg {
+  flex-shrink: 0;
 }
 
 .fecha-info {
@@ -442,7 +469,7 @@ onMounted(async () => {
 }
 
 .tipo-icon {
-  font-size: 1.1rem;
+  flex-shrink: 0;
 }
 
 .tipo-text {
@@ -461,6 +488,9 @@ onMounted(async () => {
   font-size: 0.8rem;
   color: #666;
   font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .recordatorio-actions {
@@ -478,6 +508,14 @@ onMounted(async () => {
   font-size: 0.8rem;
   font-weight: 500;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-completar svg,
+.btn-editar svg {
+  flex-shrink: 0;
 }
 
 .btn-completar {

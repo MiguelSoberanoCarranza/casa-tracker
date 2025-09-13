@@ -45,32 +45,48 @@
 
         <!-- Lista de prospectos -->
         <div class="prospectos-list">
-          <div v-for="prospecto in filteredProspectos" :key="prospecto.id" class="prospecto-card"
+          <div v-for="prospecto in filteredProspectos" :key="prospecto.id" class="prospecto-card-modern"
             @click="selectProspecto(prospecto)">
-            <div class="prospecto-header">
-              <h3>{{ prospecto.nombre }} {{ prospecto.apellido }}</h3>
-              <span :class="['status-badge', prospecto.status]">
-                {{ getStatusLabel(prospecto.status) }}
-              </span>
-            </div>
-            <div class="prospecto-info">
-              <p><strong>📧</strong> {{ prospecto.email || 'Sin email' }}</p>
-              <p><strong>📱</strong> {{ prospecto.telefono || 'Sin teléfono' }}</p>
-              <p><strong>🏠</strong> {{ prospecto.ciudad || 'Sin ubicación' }}</p>
-              <p><strong>💰</strong> ${{ formatNumber(prospecto.presupuesto_max) || 'No especificado' }}</p>
-            </div>
-            <div class="prospecto-footer">
-              <div class="interest-score">
-                <span>Puntuación: </span>
-                <div class="stars">
-                  <span v-for="i in 4" :key="i" :class="['star', { filled: i <= prospecto.puntuacion_interes }]">
-                    ⭐
-                  </span>
-                </div>
+            <!-- Header con nombre y estado -->
+            <div class="prospecto-header-modern">
+              <div class="prospecto-name-section">
+                <h3 class="prospecto-name">{{ prospecto.nombre }} {{ prospecto.apellido }}</h3>
               </div>
-              <span class="last-update">
+              <div class="prospecto-status-section">
+                <span :class="['status-badge-modern', prospecto.status]">
+                  {{ getStatusLabel(prospecto.status) }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Información de contacto -->
+            <div class="prospecto-contact-modern">
+              <div class="contact-item">
+                <Mail class="contact-icon email-icon" size="16" />
+                <span class="contact-text">{{ prospecto.email || 'Sin email' }}</span>
+              </div>
+              <div class="contact-item">
+                <Phone class="contact-icon phone-icon" size="16" />
+                <span class="contact-text">{{ prospecto.telefono || 'Sin teléfono' }}</span>
+              </div>
+              <div class="contact-item">
+                <MapPin class="contact-icon location-icon" size="16" />
+                <span class="contact-text">{{ prospecto.ciudad || 'Sin ubicación' }}</span>
+              </div>
+            </div>
+
+            <!-- Footer con puntuación y fecha -->
+            <div class="prospecto-footer-modern">
+              <div class="prospecto-rating">
+                <div class="stars-modern">
+                  <Star v-for="i in 4" :key="i" :class="['star-modern', { filled: i <= prospecto.puntuacion_interes }]"
+                    size="16" />
+                </div>
+                <span class="budget-text">${{ formatNumber(prospecto.presupuesto_max) || '0' }}</span>
+              </div>
+              <div class="prospecto-date">
                 {{ formatDate(prospecto.fecha_actualizacion) }}
-              </span>
+              </div>
             </div>
           </div>
         </div>
@@ -112,9 +128,8 @@
                 <h3>{{ prospecto.nombre }} {{ prospecto.apellido }}</h3>
                 <div class="priority-indicators">
                   <div class="stars">
-                    <span v-for="i in 4" :key="i" :class="['star', { filled: i <= prospecto.puntuacion_interes }]">
-                      ⭐
-                    </span>
+                    <Star v-for="i in 4" :key="i" :class="['star', { filled: i <= prospecto.puntuacion_interes }]"
+                      size="16" />
                   </div>
                   <span :class="['status-badge', prospecto.status]">
                     {{ getStatusLabel(prospecto.status) }}
@@ -122,8 +137,14 @@
                 </div>
               </div>
               <div class="contact-info">
-                <span v-if="prospecto.telefono" class="contact-item">📱 {{ prospecto.telefono }}</span>
-                <span v-if="prospecto.email" class="contact-item">📧 {{ prospecto.email }}</span>
+                <span v-if="prospecto.telefono" class="contact-item">
+                  <Phone size="14" />
+                  {{ prospecto.telefono }}
+                </span>
+                <span v-if="prospecto.email" class="contact-item">
+                  <Mail size="14" />
+                  {{ prospecto.email }}
+                </span>
               </div>
             </div>
 
@@ -144,16 +165,20 @@
             <!-- Acciones Rápidas -->
             <div class="quick-actions">
               <button @click="quickCall(prospecto)" class="btn-quick btn-call">
-                📞 Llamar
+                <PhoneCall size="14" />
+                Llamar
               </button>
               <button @click="quickEmail(prospecto)" class="btn-quick btn-email">
-                📧 Email
+                <Mail size="14" />
+                Email
               </button>
               <button @click="addQuickFollowup(prospecto)" class="btn-quick btn-add">
-                ➕ Seguimiento
+                <Plus size="14" />
+                Seguimiento
               </button>
               <button @click="selectProspecto(prospecto)" class="btn-quick btn-details">
-                👁️ Ver
+                <Eye size="14" />
+                Ver
               </button>
             </div>
           </div>
@@ -173,14 +198,19 @@
                 <div class="prospecto-name">
                   <h3>{{ prospecto.nombre }} {{ prospecto.apellido }}</h3>
                   <div class="stars">
-                    <span v-for="i in 4" :key="i" :class="['star', { filled: i <= prospecto.puntuacion_interes }]">
-                      ⭐
-                    </span>
+                    <Star v-for="i in 4" :key="i" :class="['star', { filled: i <= prospecto.puntuacion_interes }]"
+                      size="16" />
                   </div>
                 </div>
                 <div class="prospecto-details">
-                  <span v-if="prospecto.telefono">📱 {{ prospecto.telefono }}</span>
-                  <span v-if="prospecto.email">📧 {{ prospecto.email }}</span>
+                  <span v-if="prospecto.telefono">
+                    <Phone size="14" />
+                    {{ prospecto.telefono }}
+                  </span>
+                  <span v-if="prospecto.email">
+                    <Mail size="14" />
+                    {{ prospecto.email }}
+                  </span>
                   <span :class="['status-badge', prospecto.status]">
                     {{ getStatusLabel(prospecto.status) }}
                   </span>
@@ -202,16 +232,16 @@
 
               <div class="list-actions">
                 <button @click="quickCall(prospecto)" class="btn-action btn-call" title="Llamar">
-                  📞
+                  <PhoneCall size="16" />
                 </button>
                 <button @click="quickEmail(prospecto)" class="btn-action btn-email" title="Email">
-                  📧
+                  <Mail size="16" />
                 </button>
                 <button @click="addQuickFollowup(prospecto)" class="btn-action btn-add" title="Agregar Seguimiento">
-                  ➕
+                  <Plus size="16" />
                 </button>
                 <button @click="selectProspecto(prospecto)" class="btn-action btn-details" title="Ver Detalles">
-                  👁️
+                  <Eye size="16" />
                 </button>
               </div>
             </div>
@@ -229,11 +259,11 @@
               <h2>{{ selectedProspecto.nombre }} {{ selectedProspecto.apellido }}</h2>
               <div class="prospecto-meta-principal">
                 <div class="priority-indicators">
-                  <div class="stars">
-                    <span v-for="i in 4" :key="i"
-                      :class="['star', { filled: i <= selectedProspecto.puntuacion_interes }]">
-                      ⭐
-                    </span>
+                  <div class="stars-interactive" @click.stop="updateInterestScore">
+                    <Star v-for="i in 4" :key="i"
+                      :class="['star-interactive', { filled: i <= selectedProspecto.puntuacion_interes }]" size="20"
+                      @click.stop="setInterestScore(i)" />
+                    <span class="interest-label">{{ getInterestLabel(selectedProspecto.puntuacion_interes) }}</span>
                   </div>
                   <span :class="['status-badge', selectedProspecto.status]">
                     {{ getStatusLabel(selectedProspecto.status) }}
@@ -241,26 +271,32 @@
                 </div>
                 <div class="contact-info-principal">
                   <span v-if="selectedProspecto.telefono" class="contact-item">
-                    📱 {{ selectedProspecto.telefono }}
+                    <Phone size="16" />
+                    {{ selectedProspecto.telefono }}
                   </span>
                   <span v-if="selectedProspecto.email" class="contact-item">
-                    📧 {{ selectedProspecto.email }}
+                    <Mail size="16" />
+                    {{ selectedProspecto.email }}
                   </span>
                 </div>
               </div>
             </div>
             <div class="prospecto-actions-principal">
               <button @click="quickCall(selectedProspecto)" class="btn-action-principal btn-call">
-                📞 Llamar
+                <PhoneCall size="18" />
+                Llamar
               </button>
               <button @click="quickEmail(selectedProspecto)" class="btn-action-principal btn-email">
-                📧 Email
+                <Mail size="18" />
+                Email
               </button>
               <button @click="editProspecto(selectedProspecto)" class="btn-action-principal btn-edit">
-                ✏️ Editar
+                <Edit3 size="18" />
+                Editar
               </button>
               <button @click="goBackToProspectos" class="btn-action-principal btn-back">
-                ← Volver
+                <ArrowLeft size="18" />
+                Volver
               </button>
             </div>
           </div>
@@ -322,15 +358,6 @@
                     {{ formatDate(getNextActionDate(selectedProspecto)) }}
                   </span>
                 </div>
-                <div class="info-item">
-                  <label>Puntuación de interés:</label>
-                  <div class="stars">
-                    <span v-for="i in 4" :key="i"
-                      :class="['star', { filled: i <= selectedProspecto.puntuacion_interes }]">
-                      ⭐
-                    </span>
-                  </div>
-                </div>
               </div>
 
               <div class="info-card">
@@ -380,6 +407,26 @@ import { supabase } from '../lib/supabase.js'
 import ProspectoForm from './ProspectoForm.vue'
 import SeguimientosList from './SeguimientosList.vue'
 import Recordatorios from './Recordatorios.vue'
+
+// Importar iconos de Lucide
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Star,
+  Calendar,
+  User,
+  Plus,
+  Eye,
+  PhoneCall,
+  MessageSquare,
+  Home,
+  UserPlus,
+  CheckCircle,
+  Edit3,
+  ArrowLeft,
+  Sparkles
+} from 'lucide-vue-next'
 
 // Estado reactivo
 const prospectos = ref([])
@@ -635,6 +682,55 @@ const updateProspectoStatus = async () => {
     // Revertir el cambio en la interfaz si falló la actualización
     await loadProspectos()
   }
+}
+
+const setInterestScore = async (score) => {
+  if (!selectedProspecto.value) return
+  try {
+    console.log('🔄 Actualizando puntuación de interés:', score)
+
+    const { error } = await supabase
+      .from('prospectos')
+      .update({
+        puntuacion_interes: score,
+        fecha_actualizacion: new Date().toISOString()
+      })
+      .eq('id', selectedProspecto.value.id)
+
+    if (error) {
+      console.error('❌ Error actualizando puntuación:', error)
+      throw error
+    }
+
+    console.log('✅ Puntuación actualizada exitosamente')
+
+    selectedProspecto.value.puntuacion_interes = score
+    selectedProspecto.value.fecha_actualizacion = new Date().toISOString()
+
+    // Actualizar también en la lista principal
+    const prospectoEnLista = prospectos.value.find(p => p.id === selectedProspecto.value.id)
+    if (prospectoEnLista) {
+      prospectoEnLista.puntuacion_interes = score
+      prospectoEnLista.fecha_actualizacion = new Date().toISOString()
+    }
+
+    const label = getInterestLabel(score)
+    console.log(`✅ Puntuación actualizada a: ${label}`)
+
+  } catch (error) {
+    console.error('💥 Error actualizando puntuación de interés:', error)
+    alert('Error al actualizar la puntuación de interés. Por favor, intenta de nuevo.')
+  }
+}
+
+const getInterestLabel = (score) => {
+  const labels = {
+    1: 'Bajo',
+    2: 'Medio',
+    3: 'Alto',
+    4: 'Muy Alto'
+  }
+  return labels[score] || 'Sin calificar'
 }
 
 const handleNewProspecto = () => {
@@ -990,20 +1086,241 @@ onUnmounted(() => {
   gap: 20px;
 }
 
-.prospecto-card {
+/* Diseño moderno para tarjetas de prospectos */
+.prospecto-card-modern {
   background: white;
-  border-radius: 15px;
-  padding: 25px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 2px solid transparent;
+  border: 1px solid #e5e7eb;
+  position: relative;
+  overflow: hidden;
 }
 
-.prospecto-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-  border-color: #667eea;
+.prospecto-card-modern::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.prospecto-card-modern::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #e5e7eb;
+  transition: background-color 0.3s ease;
+}
+
+.prospecto-card-modern:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #d1d5db;
+}
+
+.prospecto-card-modern:hover::before {
+  opacity: 1;
+}
+
+.prospecto-card-modern:hover::after {
+  background: #d1d5db;
+}
+
+/* Header moderno */
+.prospecto-header-modern {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  gap: 15px;
+}
+
+.prospecto-name-section {
+  flex: 1;
+}
+
+.prospecto-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.prospecto-status-section {
+  flex-shrink: 0;
+}
+
+/* Badges de estado modernos */
+.status-badge-modern {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.status-badge-modern.nuevo {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #bbdefb;
+}
+
+.status-badge-modern.contactado {
+  background: #fff3e0;
+  color: #f57c00;
+  border: 1px solid #ffcc02;
+}
+
+.status-badge-modern.interesado {
+  background: #e8f5e8;
+  color: #388e3c;
+  border: 1px solid #c8e6c9;
+}
+
+.status-badge-modern.calificado {
+  background: #f3e5f5;
+  color: #7b1fa2;
+  border: 1px solid #e1bee7;
+}
+
+.status-badge-modern.propuesta {
+  background: #fff8e1;
+  color: #fbc02d;
+  border: 1px solid #fff59d;
+}
+
+.status-badge-modern.negociacion {
+  background: #e1f5fe;
+  color: #0288d1;
+  border: 1px solid #b3e5fc;
+}
+
+.status-badge-modern.vendido {
+  background: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.status-badge-modern.perdido {
+  background: #ffebee;
+  color: #d32f2f;
+  border: 1px solid #ffcdd2;
+}
+
+.status-badge-modern.inactivo {
+  background: #f5f5f5;
+  color: #757575;
+  border: 1px solid #e0e0e0;
+}
+
+.status-badge-modern.no_interesado {
+  background: #fff3e0;
+  color: #f57c00;
+  border: 1px solid #ffcc02;
+}
+
+/* Información de contacto moderna */
+.prospecto-contact-modern {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.contact-icon {
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-icon.email-icon {
+  color: #9c27b0;
+}
+
+.contact-icon.phone-icon {
+  color: #f44336;
+}
+
+.contact-icon.location-icon {
+  color: #ff9800;
+}
+
+.contact-text {
+  color: #555;
+  font-weight: 500;
+}
+
+/* Footer moderno */
+.prospecto-footer-modern {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.prospecto-rating {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stars-modern {
+  display: flex;
+  gap: 2px;
+}
+
+.star-modern {
+  opacity: 0.3;
+  transition: all 0.3s ease;
+  color: #d4d4d8;
+}
+
+.star-modern.filled {
+  opacity: 1;
+  color: #fbbf24;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
+}
+
+.budget-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2e7d32;
+  background: #e8f5e8;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.prospecto-date {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 500;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .prospecto-header {
@@ -1140,23 +1457,23 @@ onUnmounted(() => {
 /* Vista de Cards Compactas */
 .seguimientos-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
 }
 
 .seguimiento-card-compact {
   background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
   transition: all 0.3s ease;
   position: relative;
 }
 
 .seguimiento-card-compact:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   border-color: #667eea;
 }
 
@@ -1174,14 +1491,14 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 15px;
-  gap: 15px;
+  margin-bottom: 10px;
+  gap: 12px;
 }
 
 .prospecto-info h3 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-weight: 600;
 }
 
@@ -1210,21 +1527,21 @@ onUnmounted(() => {
 .contact-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   align-items: flex-end;
 }
 
 .contact-item {
   color: #666;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   white-space: nowrap;
 }
 
 .seguimiento-info {
-  margin-bottom: 15px;
-  padding: 12px;
+  margin-bottom: 10px;
+  padding: 10px;
   background: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 6px;
   border-left: 3px solid #667eea;
 }
 
@@ -1256,20 +1573,28 @@ onUnmounted(() => {
 
 .quick-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .btn-quick {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border: none;
-  border-radius: 6px;
-  font-size: 0.8rem;
+  border-radius: 5px;
+  font-size: 0.75rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
   flex: 1;
-  min-width: 70px;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.btn-quick svg {
+  flex-shrink: 0;
 }
 
 .btn-quick.btn-call {
@@ -1421,6 +1746,10 @@ onUnmounted(() => {
   justify-content: center;
 }
 
+.btn-action svg {
+  flex-shrink: 0;
+}
+
 .btn-action.btn-call {
   background: #4caf50;
   color: white;
@@ -1506,9 +1835,7 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-.prospecto-detalle-header * {
-  color: white !important;
-}
+
 
 .prospecto-detalle-header .btn-action-principal {
   color: white !important;
@@ -1559,16 +1886,59 @@ onUnmounted(() => {
 }
 
 .star {
-  font-size: 1.2rem;
   opacity: 0.3;
   transition: all 0.3s ease;
-  filter: grayscale(100%);
+  color: #d4d4d8;
 }
 
 .star.filled {
   opacity: 1;
-  filter: grayscale(0%);
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+  color: #fbbf24;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+}
+
+/* Estrellas interactivas en el header */
+.stars-interactive {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.stars-interactive:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.star-interactive {
+  opacity: 0.3;
+  transition: all 0.3s ease;
+  color: #d4d4d8;
+  cursor: pointer;
+}
+
+.star-interactive:hover {
+  opacity: 0.6;
+  transform: scale(1.1);
+}
+
+.star-interactive.filled {
+  opacity: 1;
+  color: #fbbf24;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+}
+
+.star-interactive.filled:hover {
+  transform: scale(1.1);
+}
+
+.interest-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fbbf24;
+  text-shadow: 0 0 4px rgba(251, 191, 36, 0.3);
 }
 
 .contact-info-principal {
@@ -1603,6 +1973,10 @@ onUnmounted(() => {
   gap: 8px;
 }
 
+.btn-action-principal svg {
+  flex-shrink: 0;
+}
+
 .btn-action-principal.btn-call {
   background: linear-gradient(135deg, #4caf50, #45a049);
   color: white;
@@ -1634,22 +2008,22 @@ onUnmounted(() => {
 }
 
 .prospecto-detalle-content {
-  padding: 30px;
+  padding: 20px;
 }
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
 }
 
 .info-card {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-radius: 15px;
-  padding: 25px;
-  border-left: 4px solid #667eea;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+  border-radius: 10px;
+  padding: 16px;
+
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -1662,7 +2036,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+  
 }
 
 .info-card:hover {
@@ -1675,16 +2049,16 @@ onUnmounted(() => {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-size: 1.3rem;
-  margin: 0 0 20px 0;
-  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  font-weight: 600;
 }
 
 .info-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #e0e0e0;
 }
 
@@ -1695,8 +2069,8 @@ onUnmounted(() => {
 .info-item label {
   font-weight: 600;
   color: #667eea;
-  min-width: 120px;
-  font-size: 0.95rem;
+  min-width: 100px;
+  font-size: 0.9rem;
 }
 
 .info-item span {
@@ -1902,16 +2276,22 @@ onUnmounted(() => {
     width: 100%;
   }
 
-  .prospecto-header {
+  .prospecto-header-modern {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
   }
 
-  .prospecto-footer {
+  .prospecto-footer-modern {
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     align-items: flex-start;
+  }
+
+  .prospecto-rating {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 
   .seguimientos-filters {
@@ -1973,20 +2353,32 @@ onUnmounted(() => {
     margin-bottom: 15px;
   }
 
-  .prospecto-header {
+  .prospecto-card-modern {
+    padding: 16px;
+  }
+
+  .prospecto-header-modern {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
 
-  .prospecto-header h3 {
+  .prospecto-name {
     font-size: 1.1rem;
   }
 
-  .prospecto-footer {
+  .prospecto-footer-modern {
     flex-direction: column;
     gap: 10px;
     align-items: flex-start;
+  }
+
+  .contact-item {
+    font-size: 0.85rem;
+  }
+
+  .contact-icon {
+    font-size: 0.9rem;
   }
 
   .seguimientos-filters {
@@ -2085,11 +2477,11 @@ onUnmounted(() => {
 
   .info-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 15px;
   }
 
   .info-card {
-    padding: 20px;
+    padding: 14px;
   }
 
   .seguimientos-section-detalle {

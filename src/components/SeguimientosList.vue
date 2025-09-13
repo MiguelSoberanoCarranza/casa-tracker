@@ -125,19 +125,6 @@
       </div>
     </div>
 
-    <!-- Actualizar puntuación de interés -->
-    <div class="interest-update">
-      <h4>Actualizar Puntuación de Interés</h4>
-      <div class="interest-selector">
-        <button v-for="i in 4" :key="i" type="button" @click="updateInterestScore(i)"
-          :class="['interest-btn', { active: prospecto.puntuacion_interes >= i }]">
-          ⭐
-        </button>
-        <span class="interest-label">
-          {{ getInterestLabel(prospecto.puntuacion_interes) }}
-        </span>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -254,35 +241,6 @@ const saveSeguimiento = async () => {
   }
 }
 
-// Actualizar puntuación de interés
-const updateInterestScore = async (score) => {
-  try {
-    // Obtener el usuario autenticado actual
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
-
-    if (userError || !user) {
-      alert('Error de autenticación. Por favor, inicia sesión nuevamente.')
-      return
-    }
-
-    const { error } = await supabase
-      .from('prospectos')
-      .update({
-        puntuacion_interes: score,
-        fecha_actualizacion: new Date().toISOString()
-      })
-      .eq('id', props.prospecto.id)
-      .eq('agente_id', user.id)
-
-    if (error) throw error
-
-    // Actualizar el prospecto local
-    props.prospecto.puntuacion_interes = score
-    emit('updated')
-  } catch (error) {
-    alert('Error al actualizar la puntuación. Por favor, intenta de nuevo.')
-  }
-}
 
 const cancelForm = () => {
   showAddForm.value = false
@@ -329,15 +287,6 @@ const getResultadoLabel = (resultado) => {
   return labels[resultado] || resultado
 }
 
-const getInterestLabel = (score) => {
-  const labels = {
-    1: 'Bajo',
-    2: 'Medio',
-    3: 'Alto',
-    4: 'Muy Alto'
-  }
-  return labels[score] || 'Bajo'
-}
 
 const formatDate = (date) => {
   if (!date) return 'N/A'
@@ -624,53 +573,6 @@ onMounted(() => {
   color: #f57c00;
 }
 
-.interest-update {
-  background: #f8f9fa;
-  border-radius: 10px;
-  padding: 20px;
-  border: 1px solid #e0e0e0;
-}
-
-.interest-update h4 {
-  margin-bottom: 15px;
-  color: #333;
-  font-size: 1.1rem;
-}
-
-.interest-selector {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.interest-btn {
-  background: none;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  background: white;
-}
-
-.interest-btn:hover {
-  border-color: #667eea;
-  background: #f8f9ff;
-}
-
-.interest-btn.active {
-  border-color: #667eea;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-}
-
-.interest-label {
-  font-weight: 500;
-  color: #666;
-  font-size: 0.9rem;
-}
 
 /* Tablet (768px - 1024px) */
 @media (max-width: 1024px) and (min-width: 769px) {
@@ -736,10 +638,6 @@ onMounted(() => {
     font-size: 0.9rem;
   }
 
-  .interest-selector {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
 
   .seguimiento-card {
     padding: 16px;
@@ -883,30 +781,6 @@ onMounted(() => {
     font-size: 0.75rem;
   }
 
-  .interest-update {
-    padding: 15px;
-  }
-
-  .interest-update h4 {
-    font-size: 1rem;
-    margin-bottom: 12px;
-  }
-
-  .interest-selector {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .interest-btn {
-    padding: 6px 8px;
-    font-size: 0.9rem;
-    border-radius: 4px;
-  }
-
-  .interest-label {
-    font-size: 0.85rem;
-  }
 }
 
 /* Extra Small Mobile (max-width: 320px) */
@@ -964,9 +838,5 @@ onMounted(() => {
     font-size: 0.8rem;
   }
 
-  .interest-btn {
-    padding: 5px 7px;
-    font-size: 0.85rem;
-  }
 }
 </style>

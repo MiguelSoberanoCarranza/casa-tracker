@@ -1,0 +1,29 @@
+{
+  "name": "casa-tracker",
+  "version": "1.0.0",
+  "description": "Aplicación de seguimiento de prospectos de ventas de casas",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/vercel": "^4.0.0",
+    "@astrojs/vue": "^4.0.0",
+    "@supabase/supabase-js": "^2.38.0",
+    "@vue/server-renderer": "^3.4.0",
+    "astro": "^4.0.0",
+    "vue": "^3.4.0"
+  },
+  "keywords": [
+    "ventas",
+    "casas",
+    "prospectos",
+    "seguimiento"
+  ],
+  "author": "",
+  "license": "ISC"
+}

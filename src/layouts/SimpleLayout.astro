@@ -1,0 +1,204 @@
+---
+export interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Aplicación de seguimiento de prospectos de ventas de casas" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 100vh;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      /* Barra superior - 10% de la pantalla */
+      .top-bar {
+        height: 10vh;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+      }
+      
+      .top-bar-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+      }
+      
+      .top-bar .logo-section h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+      }
+      
+      .top-menu {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #666;
+        font-size: 0.9rem;
+      }
+      
+      .logout-btn {
+        background: #ff4757;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+      
+      .logout-btn:hover {
+        background: #ff3838;
+        transform: translateY(-1px);
+      }
+      
+      .container {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        overflow: hidden;
+      }
+      
+      .main-content {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      @media (max-width: 768px) {
+        .top-bar {
+          height: 12vh;
+        }
+        
+        .container {
+          padding: 10px;
+        }
+        
+        .top-bar-content {
+          padding: 0 15px;
+          flex-direction: column;
+          gap: 5px;
+        }
+        
+        .top-bar .logo-section h1 {
+          font-size: 1.4rem;
+        }
+        
+        .top-menu {
+          width: 100%;
+          justify-content: center;
+        }
+        
+        .main-content {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Barra superior fija -->
+    <nav class="top-bar">
+      <div class="top-bar-content">
+        <div class="logo-section">
+          <h1>🏠 Casa Tracker</h1>
+        </div>
+        <div class="top-menu">
+          <slot name="top-menu" />
+          <div class="user-info" id="user-info" style="display: none;">
+            <span id="user-email"></span>
+            <button id="logout-btn" class="logout-btn">
+              Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <main class="main-content">
+        <slot />
+      </main>
+    </div>
+
+    <script>
+      import { supabase } from '../lib/supabase.js'
+      
+      // Mostrar información del usuario y manejar logout
+      async function initAuth() {
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (session?.user) {
+          // Mostrar información del usuario
+          document.getElementById('user-email').textContent = session.user.email
+          document.getElementById('user-info').style.display = 'flex'
+          
+          // Manejar logout
+          document.getElementById('logout-btn').addEventListener('click', async () => {
+            await supabase.auth.signOut()
+            window.location.href = '/login'
+          })
+        } else {
+          // No hay sesión, redirigir a login
+          window.location.href = '/login'
+        }
+      }
+      
+      // Inicializar cuando el DOM esté listo
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAuth)
+      } else {
+        initAuth()
+      }
+    </script>
+  </body>
+</html>

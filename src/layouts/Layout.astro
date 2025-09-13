@@ -1,0 +1,105 @@
+---
+import AuthWrapper from '../components/AuthWrapper.vue';
+
+export interface Props {
+  title: string;
+  requireAuth?: boolean;
+}
+
+const { title, requireAuth = true } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Aplicación de seguimiento de prospectos de ventas de casas" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 100vh;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      /* Barra superior - 10% de la pantalla */
+      .top-bar {
+        height: 10vh;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+      }
+      
+      .top-bar-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+      }
+      
+      .top-bar .logo-section h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+      }
+      
+      .top-menu {
+        display: flex;
+        align-items: center;
+      }
+      
+      
+      @media (max-width: 768px) {
+        .top-bar {
+          height: 12vh;
+        }
+        
+        .top-bar-content {
+          padding: 0 15px;
+          flex-direction: column;
+          gap: 5px;
+        }
+        
+        .top-bar .logo-section h1 {
+          font-size: 1.4rem;
+        }
+        
+        .top-menu {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <AuthWrapper>
+        <slot name="top-menu" />
+        <slot />
+      </AuthWrapper>
+    </div>
+  </body>
+</html>

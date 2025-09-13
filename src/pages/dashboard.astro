@@ -1,0 +1,236 @@
+---
+import SimpleLayout from '../layouts/SimpleLayout.astro';
+import TopMenu from '../components/TopMenu.vue';
+
+export const prerender = false;
+---
+
+<SimpleLayout title="Casa Tracker - Dashboard">
+  <div id="dashboard-content">
+    <!-- Lista de Prospectos -->
+    <div id="prospectos-section">
+      <div class="section-header">
+        <h2>Lista de Prospectos</h2>
+        <button id="nuevo-prospecto-btn" class="btn-primary">
+          <span class="btn-icon">✨</span>
+          <span class="btn-text">Nuevo Prospecto</span>
+        </button>
+      </div>
+      
+      <!-- Filtros -->
+      <div class="filters">
+        <input 
+          id="search-input"
+          type="text" 
+          placeholder="Buscar prospectos..."
+          class="search-input"
+        >
+        <select id="status-filter" class="filter-select">
+          <option value="">Todos los estados</option>
+          <option value="nuevo">Nuevo</option>
+          <option value="contactado">Contactado</option>
+          <option value="interesado">Interesado</option>
+          <option value="calificado">Calificado</option>
+          <option value="propuesta">Propuesta</option>
+          <option value="negociacion">Negociación</option>
+          <option value="vendido">Vendido</option>
+          <option value="perdido">Perdido</option>
+        </select>
+      </div>
+
+      <!-- Lista de prospectos -->
+      <div id="prospectos-list">
+        <div id="loading-message" class="loading-message">
+          Cargando prospectos...
+        </div>
+        <div id="empty-message" class="empty-message" style="display: none;">
+          <p>No hay prospectos registrados</p>
+          <button id="add-first-btn" class="btn-primary">
+            <span class="btn-icon">✨</span>
+            <span class="btn-text">Agregar Primer Prospecto</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <TopMenu slot="top-menu" />
+</SimpleLayout>
+
+<style>
+  .dashboard {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .tab-content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  .section-header h2 {
+    font-size: 1.8rem;
+    color: #333;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-icon {
+    font-size: 1rem;
+  }
+
+  .btn-text {
+    font-weight: 600;
+  }
+
+  .filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+
+  .search-input, .filter-select {
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    min-width: 200px;
+  }
+
+  .search-input:focus, .filter-select:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+
+  .prospectos-list {
+    display: grid;
+    gap: 20px;
+  }
+
+  .loading-message, .empty-message {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 1.1rem;
+  }
+
+  .empty-message p {
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .section-header {
+      flex-direction: column;
+      gap: 15px;
+      align-items: stretch;
+    }
+    
+    .filters {
+      flex-direction: column;
+    }
+    
+    .search-input, .filter-select {
+      min-width: auto;
+    }
+  }
+</style>
+
+<script>
+  // Esperar a que el DOM esté listo
+  document.addEventListener('DOMContentLoaded', async function() {
+    console.log('Dashboard cargado')
+    
+    // Importar Supabase dinámicamente
+    const { supabase } = await import('../lib/supabase.js')
+    
+    // Elementos del DOM
+    const loadingMessage = document.getElementById('loading-message')
+    const emptyMessage = document.getElementById('empty-message')
+    const prospectosList = document.getElementById('prospectos-list')
+    const nuevoProspectoBtn = document.getElementById('nuevo-prospecto-btn')
+    const addFirstBtn = document.getElementById('add-first-btn')
+    
+    // Función para cargar prospectos
+    async function loadProspectos() {
+      try {
+        console.log('Cargando prospectos...')
+        loadingMessage.style.display = 'block'
+        emptyMessage.style.display = 'none'
+        
+        const { data, error } = await supabase
+          .from('prospectos')
+          .select('*')
+          .order('fecha_actualizacion', { ascending: false })
+        
+        if (error) {
+          console.error('Error cargando prospectos:', error)
+          loadingMessage.style.display = 'none'
+          emptyMessage.style.display = 'block'
+          return
+        }
+        
+        console.log('Prospectos cargados:', data)
+        
+        if (!data || data.length === 0) {
+          loadingMessage.style.display = 'none'
+          emptyMessage.style.display = 'block'
+        } else {
+          loadingMessage.style.display = 'none'
+          emptyMessage.style.display = 'none'
+          // Aquí podrías renderizar los prospectos
+          console.log('Prospectos encontrados:', data.length)
+        }
+      } catch (error) {
+        console.error('Error:', error)
+        loadingMessage.style.display = 'none'
+        emptyMessage.style.display = 'block'
+      }
+    }
+    
+    // Event listeners
+    nuevoProspectoBtn.addEventListener('click', () => {
+      console.log('Nuevo prospecto clickeado')
+      alert('Funcionalidad de nuevo prospecto')
+    })
+    
+    addFirstBtn.addEventListener('click', () => {
+      console.log('Agregar primer prospecto clickeado')
+      alert('Funcionalidad de agregar primer prospecto')
+    })
+    
+    // Cargar prospectos al inicio
+    loadProspectos()
+  })
+</script>

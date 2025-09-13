@@ -1,0 +1,77 @@
+---
+import LoginLayout from '../layouts/LoginLayout.astro';
+
+export const prerender = false;
+---
+
+<LoginLayout title="Redirigiendo...">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin: 0;
+    }
+    
+    .loading-container {
+      text-align: center;
+    }
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <h2>Redirigiendo...</h2>
+    <p>Verificando autenticación...</p>
+  </div>
+
+  <script>
+    import { supabase } from '../lib/supabase.js'
+
+    // Manejar el flujo de autenticación
+    async function handleAuthRedirect() {
+      try {
+        // Obtener la sesión actual
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Error obteniendo sesión:', error)
+          window.location.href = '/login'
+          return
+        }
+        
+        if (session?.user) {
+          // Usuario autenticado, redirigir al dashboard
+          window.location.href = '/'
+        } else {
+          // No autenticado, redirigir al login
+          window.location.href = '/login'
+        }
+      } catch (error) {
+        console.error('Error en redirect:', error)
+        window.location.href = '/login'
+      }
+    }
+
+    // Ejecutar al cargar la página
+    handleAuthRedirect()
+  </script>
+</LoginLayout>

@@ -1,0 +1,10 @@
+---
+import SimpleLayout from '../layouts/SimpleLayout.astro';
+import Dashboard from '../components/Dashboard.vue';
+import TopMenu from '../components/TopMenu.vue';
+---
+
+<SimpleLayout title="Casa Tracker - Dashboard">
+  <Dashboard client:load />
+  <TopMenu slot="top-menu" client:load />
+</SimpleLayout>

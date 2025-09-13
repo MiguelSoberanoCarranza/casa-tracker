@@ -1,0 +1,397 @@
+---
+import LoginLayout from '../layouts/LoginLayout.astro';
+
+export const prerender = false;
+---
+
+<LoginLayout title="Iniciar Sesión - Casa Tracker">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100vh;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    
+    .logo {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    
+    .logo-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 30px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+    
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .error-message {
+      background: #ffebee;
+      color: #d32f2f;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    
+    .success-message {
+      background: #e8f5e8;
+      color: #2e7d32;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    
+    .register-link {
+      margin-top: 20px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .register-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .register-link a:hover {
+      text-decoration: underline;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    @media (max-width: 480px) {
+      .login-container {
+        margin: 20px;
+        padding: 30px 20px;
+      }
+    }
+  </style>
+
+  <div class="login-container">
+    <div class="logo">🏠</div>
+    <h1 class="logo-text">Casa Tracker</h1>
+    
+    <!-- Mensajes de error/éxito -->
+    <div id="error-message" class="error-message"></div>
+    <div id="success-message" class="success-message"></div>
+    
+    <!-- Formulario de login -->
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input 
+          id="email"
+          type="email" 
+          required 
+          placeholder="tu@email.com"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+          id="password"
+          type="password" 
+          required 
+          placeholder="Tu contraseña"
+        >
+      </div>
+      
+      <button type="submit" id="login-btn" class="login-btn">
+        <span id="login-text">Iniciar Sesión</span>
+        <span id="login-loading" class="loading hidden"></span>
+      </button>
+    </form>
+    
+    <!-- Formulario de registro -->
+    <form id="register-form" class="hidden">
+      <div class="form-group">
+        <label for="reg-email">Correo electrónico</label>
+        <input 
+          id="reg-email"
+          type="email" 
+          required 
+          placeholder="tu@email.com"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="reg-password">Contraseña</label>
+        <input 
+          id="reg-password"
+          type="password" 
+          required 
+          placeholder="Mínimo 6 caracteres"
+          minlength="6"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="confirm-password">Confirmar contraseña</label>
+        <input 
+          id="confirm-password"
+          type="password" 
+          required 
+          placeholder="Repite tu contraseña"
+          minlength="6"
+        >
+      </div>
+      
+      <button type="submit" id="register-btn" class="login-btn">
+        <span id="register-text">Crear Cuenta</span>
+        <span id="register-loading" class="loading hidden"></span>
+      </button>
+    </form>
+    
+    <!-- Enlaces para cambiar entre login y registro -->
+    <div class="register-link">
+      <span id="login-link-text">
+        ¿No tienes cuenta? 
+        <a href="#" id="show-register">Regístrate aquí</a>
+      </span>
+      <span id="register-link-text" class="hidden">
+        ¿Ya tienes cuenta? 
+        <a href="#" id="show-login">Inicia sesión</a>
+      </span>
+    </div>
+  </div>
+
+  <script>
+    // Esperar a que el DOM esté listo
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Importar Supabase dinámicamente
+      const { supabase } = await import('../lib/supabase.js')
+      
+      // Elementos del DOM
+      const loginForm = document.getElementById('login-form')
+      const registerForm = document.getElementById('register-form')
+      const errorMessage = document.getElementById('error-message')
+      const successMessage = document.getElementById('success-message')
+      const loginBtn = document.getElementById('login-btn')
+      const registerBtn = document.getElementById('register-btn')
+      const loginText = document.getElementById('login-text')
+      const registerText = document.getElementById('register-text')
+      const loginLoading = document.getElementById('login-loading')
+      const registerLoading = document.getElementById('register-loading')
+      const showRegisterLink = document.getElementById('show-register')
+      const showLoginLink = document.getElementById('show-login')
+      const loginLinkText = document.getElementById('login-link-text')
+      const registerLinkText = document.getElementById('register-link-text')
+      
+      // Función para mostrar errores
+      function showError(message) {
+        errorMessage.textContent = message
+        errorMessage.style.display = 'block'
+        successMessage.style.display = 'none'
+      }
+      
+      // Función para mostrar éxito
+      function showSuccess(message) {
+        successMessage.textContent = message
+        successMessage.style.display = 'block'
+        errorMessage.style.display = 'none'
+      }
+      
+      // Función para ocultar mensajes
+      function hideMessages() {
+        errorMessage.style.display = 'none'
+        successMessage.style.display = 'none'
+      }
+      
+      // Función para cambiar entre formularios
+      function toggleForms() {
+        loginForm.classList.toggle('hidden')
+        registerForm.classList.toggle('hidden')
+        loginLinkText.classList.toggle('hidden')
+        registerLinkText.classList.toggle('hidden')
+        hideMessages()
+      }
+      
+      // Event listeners para cambiar formularios
+      showRegisterLink.addEventListener('click', (e) => {
+        e.preventDefault()
+        toggleForms()
+      })
+      
+      showLoginLink.addEventListener('click', (e) => {
+        e.preventDefault()
+        toggleForms()
+      })
+      
+      // Manejar login
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        
+        const email = document.getElementById('email').value
+        const password = document.getElementById('password').value
+        
+        // Mostrar loading
+        loginBtn.disabled = true
+        loginText.classList.add('hidden')
+        loginLoading.classList.remove('hidden')
+        hideMessages()
+        
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          })
+          
+          if (error) throw error
+          
+          // Redirigir al dashboard
+          window.location.href = '/'
+        } catch (error) {
+          showError(error.message)
+        } finally {
+          // Ocultar loading
+          loginBtn.disabled = false
+          loginText.classList.remove('hidden')
+          loginLoading.classList.add('hidden')
+        }
+      })
+      
+      // Manejar registro
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        
+        const email = document.getElementById('reg-email').value
+        const password = document.getElementById('reg-password').value
+        const confirmPassword = document.getElementById('confirm-password').value
+        
+        if (password !== confirmPassword) {
+          showError('Las contraseñas no coinciden')
+          return
+        }
+        
+        // Mostrar loading
+        registerBtn.disabled = true
+        registerText.classList.add('hidden')
+        registerLoading.classList.remove('hidden')
+        hideMessages()
+        
+        try {
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+          })
+          
+          if (error) throw error
+          
+          showSuccess('¡Cuenta creada! Revisa tu email para confirmar tu cuenta.')
+          
+          // Limpiar formulario
+          document.getElementById('reg-email').value = ''
+          document.getElementById('reg-password').value = ''
+          document.getElementById('confirm-password').value = ''
+          
+          // Cambiar a modo login después de 2 segundos
+          setTimeout(() => {
+            toggleForms()
+          }, 2000)
+        } catch (error) {
+          showError(error.message)
+        } finally {
+          // Ocultar loading
+          registerBtn.disabled = false
+          registerText.classList.remove('hidden')
+          registerLoading.classList.add('hidden')
+        }
+      })
+    })
+  </script>
+</LoginLayout>

@@ -8,9 +8,11 @@
       <div v-if="activeTab === 'prospectos'" class="prospectos-section">
         <div class="section-header">
           <h2>Lista de Prospectos</h2>
-          <button @click="handleNewProspecto" class="btn-primary" id="nuevo-prospecto-btn">
+          <button @click="handleNewProspecto" :disabled="showAddForm" class="btn-primary" id="nuevo-prospecto-btn">
             <span class="btn-icon">✨</span>
-            <span class="btn-text">Nuevo Prospecto</span>
+            <span class="btn-text">
+              {{ showAddForm ? 'Formulario Abierto' : 'Nuevo Prospecto' }}
+            </span>
           </button>
         </div>
 
@@ -72,12 +74,52 @@
 
       <!-- Seguimientos -->
       <div v-if="activeTab === 'seguimientos'" class="seguimientos-section">
-        <h2>Seguimientos</h2>
-        <div v-if="selectedProspecto">
-          <SeguimientosList :prospecto="selectedProspecto" @updated="loadProspectos" />
+        <div class="section-header">
+          <h2>Seguimientos</h2>
+          <div class="seguimientos-filters">
+            <select v-model="seguimientosFilter" class="filter-select">
+              <option value="">Todos los prospectos</option>
+              <option value="con_seguimientos">Con seguimientos</option>
+              <option value="sin_seguimientos">Sin seguimientos</option>
+              <option value="recientes">Seguimientos recientes</option>
+            </select>
+          </div>
         </div>
-        <div v-else class="no-selection">
-          <p>Selecciona un prospecto para ver sus seguimientos</p>
+
+        <!-- Lista de prospectos con sus seguimientos -->
+        <div class="prospectos-seguimientos">
+          <div v-for="prospecto in filteredProspectosForSeguimientos" :key="prospecto.id"
+            class="prospecto-seguimientos-card">
+            <div class="prospecto-header">
+              <div class="prospecto-info">
+                <h3>{{ prospecto.nombre }} {{ prospecto.apellido }}</h3>
+                <div class="prospecto-meta">
+                  <span v-if="prospecto.email">📧 {{ prospecto.email }}</span>
+                  <span v-if="prospecto.telefono">📱 {{ prospecto.telefono }}</span>
+                  <span :class="['status-badge', prospecto.status]">
+                    {{ getStatusLabel(prospecto.status) }}
+                  </span>
+                </div>
+              </div>
+              <div class="prospecto-actions">
+                <button @click="selectProspecto(prospecto)" class="btn-secondary btn-sm">
+                  Ver Detalles
+                </button>
+                <button @click="toggleSeguimientos(prospecto.id)" class="btn-primary btn-sm">
+                  {{ expandedSeguimientos.includes(prospecto.id) ? 'Ocultar' : 'Ver' }} Seguimientos
+                </button>
+              </div>
+            </div>
+
+            <!-- Seguimientos del prospecto -->
+            <div v-if="expandedSeguimientos.includes(prospecto.id)" class="seguimientos-content">
+              <SeguimientosList :prospecto="prospecto" @updated="loadProspectos" />
+            </div>
+          </div>
+
+          <div v-if="filteredProspectosForSeguimientos.length === 0" class="no-seguimientos">
+            <p>No hay prospectos para mostrar seguimientos</p>
+          </div>
         </div>
       </div>
 
@@ -103,6 +145,8 @@ const activeTab = ref('prospectos')
 const showAddForm = ref(false)
 const searchQuery = ref('')
 const statusFilter = ref('')
+const seguimientosFilter = ref('')
+const expandedSeguimientos = ref([])
 
 // Computed properties
 
@@ -126,6 +170,27 @@ const filteredProspectos = computed(() => {
   return filtered.sort((a, b) => new Date(b.fecha_actualizacion) - new Date(a.fecha_actualizacion))
 })
 
+// Filtro para prospectos en la sección de seguimientos
+const filteredProspectosForSeguimientos = computed(() => {
+  let filtered = prospectos.value
+
+  if (seguimientosFilter.value === 'con_seguimientos') {
+    // Filtrar solo prospectos que tengan seguimientos
+    // Por ahora mostramos todos, pero esto se puede mejorar con una consulta específica
+    filtered = filtered
+  } else if (seguimientosFilter.value === 'sin_seguimientos') {
+    // Filtrar solo prospectos sin seguimientos
+    // Por ahora mostramos todos, pero esto se puede mejorar con una consulta específica
+    filtered = filtered
+  } else if (seguimientosFilter.value === 'recientes') {
+    // Filtrar prospectos con seguimientos recientes
+    // Por ahora mostramos todos, pero esto se puede mejorar con una consulta específica
+    filtered = filtered
+  }
+
+  return filtered.sort((a, b) => new Date(b.fecha_actualizacion) - new Date(a.fecha_actualizacion))
+})
+
 // Tabs
 const tabs = [
   { id: 'prospectos', name: 'Prospectos', icon: '👤' },
@@ -140,9 +205,27 @@ const loadProspectos = async () => {
     console.log('🔄 Iniciando carga de prospectos...')
     console.log('📡 Supabase client:', supabase)
 
+    // Obtener el usuario actual
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+
+    if (userError) {
+      console.error('❌ Error obteniendo usuario:', userError)
+      throw userError
+    }
+
+    if (!user) {
+      console.error('❌ No hay usuario autenticado')
+      prospectos.value = []
+      return
+    }
+
+    console.log('👤 Usuario actual:', user.id)
+
+    // Filtrar prospectos por el agente actual
     const { data, error } = await supabase
       .from('prospectos')
       .select('*')
+      .eq('agente_id', user.id)
       .order('fecha_actualizacion', { ascending: false })
 
     console.log('📊 Respuesta de Supabase:', { data, error })
@@ -153,7 +236,20 @@ const loadProspectos = async () => {
     }
 
     console.log('✅ Prospectos cargados exitosamente:', data?.length || 0)
-    prospectos.value = data || []
+
+    // Eliminar duplicados en el frontend como medida de seguridad
+    const uniqueProspectos = data ? data.filter((prospecto, index, self) =>
+      index === self.findIndex(p =>
+        p.id === prospecto.id ||
+        (p.nombre === prospecto.nombre &&
+          p.apellido === prospecto.apellido &&
+          p.email === prospecto.email &&
+          p.telefono === prospecto.telefono)
+      )
+    ) : []
+
+    console.log('🔍 Duplicados eliminados:', (data?.length || 0) - uniqueProspectos.length)
+    prospectos.value = uniqueProspectos
   } catch (error) {
     console.error('💥 Error completo cargando prospectos:', error)
     console.error('📋 Stack trace:', error.stack)
@@ -186,14 +282,24 @@ const handleProspectoSaved = () => {
 
 const handleNewProspecto = () => {
   try {
+    // Prevenir doble click
+    if (showAddForm.value) {
+      console.log('⚠️ Formulario ya abierto, ignorando doble click')
+      return
+    }
+
     console.log('✨ Botón Nuevo Prospecto clickeado')
     console.log('📊 Estado actual:', {
       showAddForm: showAddForm.value,
       activeTab: activeTab.value,
       selectedProspecto: selectedProspecto.value
     })
+
     showAddForm.value = true
-    console.log('✅ showAddForm establecido a true')
+    selectedProspecto.value = null
+    activeTab.value = 'nuevo'
+
+    console.log('✅ Formulario de nuevo prospecto abierto')
 
     // Verificar que el cambio se aplicó
     setTimeout(() => {
@@ -236,6 +342,16 @@ const formatDate = (date) => {
 // Función para cambiar pestaña desde el TopMenu
 const handleTabChange = (tabId) => {
   activeTab.value = tabId
+}
+
+// Función para alternar la visualización de seguimientos
+const toggleSeguimientos = (prospectoId) => {
+  const index = expandedSeguimientos.value.indexOf(prospectoId)
+  if (index > -1) {
+    expandedSeguimientos.value.splice(index, 1)
+  } else {
+    expandedSeguimientos.value.push(prospectoId)
+  }
 }
 
 // Escuchar eventos del TopMenu
@@ -284,24 +400,9 @@ onMounted(async () => {
 
     console.log('✅ Dashboard inicializado correctamente')
 
-    // Hacer la función global para debugging (solo en el cliente)
-    if (typeof window !== 'undefined') {
-      window.handleNewProspecto = handleNewProspecto
-      console.log('🌐 Función global asignada')
-    }
-
-    // Agregar event listener de JavaScript vanilla como respaldo
-    const btn = document.getElementById('nuevo-prospecto-btn')
-    if (btn) {
-      console.log('🔧 Agregando event listener de respaldo al botón')
-      btn.addEventListener('click', (e) => {
-        console.log('🆘 Event listener de respaldo activado!')
-        e.preventDefault()
-        handleNewProspecto()
-      })
-    } else {
-      console.log('❌ No se encontró el botón con ID nuevo-prospecto-btn')
-    }
+    // NOTA: Removido el event listener duplicado que podía causar múltiples ejecuciones
+    // El botón ya tiene @click="handleNewProspecto" en el template de Vue
+    console.log('✅ Dashboard inicializado sin event listeners duplicados')
   } catch (error) {
     console.error('💥 Error inicializando dashboard:', error)
   }
@@ -527,6 +628,88 @@ onUnmounted(() => {
   font-size: 1.1rem;
 }
 
+/* Estilos para la sección de seguimientos */
+.seguimientos-filters {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.prospectos-seguimientos {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.prospecto-seguimientos-card {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.prospecto-seguimientos-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border-color: #667eea;
+}
+
+.prospecto-seguimientos-card .prospecto-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  gap: 20px;
+}
+
+.prospecto-seguimientos-card .prospecto-info h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.prospecto-seguimientos-card .prospecto-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+.prospecto-seguimientos-card .prospecto-meta span {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.prospecto-seguimientos-card .prospecto-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+.seguimientos-content {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.no-seguimientos {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-style: italic;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 2px dashed #e0e0e0;
+}
+
 @media (max-width: 768px) {
   .section-header {
     flex-direction: column;
@@ -553,6 +736,25 @@ onUnmounted(() => {
     flex-direction: column;
     gap: 10px;
     align-items: flex-start;
+  }
+
+  .seguimientos-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prospecto-seguimientos-card .prospecto-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+
+  .prospecto-seguimientos-card .prospecto-actions {
+    justify-content: stretch;
+  }
+
+  .prospecto-seguimientos-card .prospecto-actions .btn-sm {
+    flex: 1;
   }
 }
 </style>

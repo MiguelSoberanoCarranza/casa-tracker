@@ -8,48 +8,24 @@
           <div class="form-row">
             <div class="form-group">
               <label for="nombre">Nombre *</label>
-              <input 
-                v-model="form.nombre" 
-                type="text" 
-                id="nombre" 
-                required
-                class="form-input"
-                placeholder="Nombre del prospecto"
-              >
+              <input v-model="form.nombre" type="text" id="nombre" required class="form-input"
+                placeholder="Nombre del prospecto">
             </div>
             <div class="form-group">
               <label for="apellido">Apellido *</label>
-              <input 
-                v-model="form.apellido" 
-                type="text" 
-                id="apellido" 
-                required
-                class="form-input"
-                placeholder="Apellido del prospecto"
-              >
+              <input v-model="form.apellido" type="text" id="apellido" required class="form-input"
+                placeholder="Apellido del prospecto">
             </div>
           </div>
-          
+
           <div class="form-row">
             <div class="form-group">
               <label for="email">Email</label>
-              <input 
-                v-model="form.email" 
-                type="email" 
-                id="email" 
-                class="form-input"
-                placeholder="email@ejemplo.com"
-              >
+              <input v-model="form.email" type="email" id="email" class="form-input" placeholder="email@ejemplo.com">
             </div>
             <div class="form-group">
               <label for="telefono">Teléfono</label>
-              <input 
-                v-model="form.telefono" 
-                type="tel" 
-                id="telefono" 
-                class="form-input"
-                placeholder="+52 123 456 7890"
-              >
+              <input v-model="form.telefono" type="tel" id="telefono" class="form-input" placeholder="+52 123 456 7890">
             </div>
           </div>
         </div>
@@ -59,45 +35,22 @@
           <h3>📍 Ubicación</h3>
           <div class="form-group">
             <label for="direccion">Dirección</label>
-            <input 
-              v-model="form.direccion" 
-              type="text" 
-              id="direccion" 
-              class="form-input"
-              placeholder="Calle, número, colonia"
-            >
+            <input v-model="form.direccion" type="text" id="direccion" class="form-input"
+              placeholder="Calle, número, colonia">
           </div>
-          
+
           <div class="form-row">
             <div class="form-group">
               <label for="ciudad">Ciudad</label>
-              <input 
-                v-model="form.ciudad" 
-                type="text" 
-                id="ciudad" 
-                class="form-input"
-                placeholder="Ciudad"
-              >
+              <input v-model="form.ciudad" type="text" id="ciudad" class="form-input" placeholder="Ciudad">
             </div>
             <div class="form-group">
               <label for="estado">Estado</label>
-              <input 
-                v-model="form.estado" 
-                type="text" 
-                id="estado" 
-                class="form-input"
-                placeholder="Estado"
-              >
+              <input v-model="form.estado" type="text" id="estado" class="form-input" placeholder="Estado">
             </div>
             <div class="form-group">
               <label for="codigo_postal">Código Postal</label>
-              <input 
-                v-model="form.codigo_postal" 
-                type="text" 
-                id="codigo_postal" 
-                class="form-input"
-                placeholder="12345"
-              >
+              <input v-model="form.codigo_postal" type="text" id="codigo_postal" class="form-input" placeholder="12345">
             </div>
           </div>
         </div>
@@ -108,15 +61,8 @@
           <div class="form-row">
             <div class="form-group">
               <label for="presupuesto_max">Presupuesto Máximo</label>
-              <input 
-                v-model="form.presupuesto_max" 
-                type="number" 
-                id="presupuesto_max" 
-                class="form-input"
-                placeholder="1000000"
-                min="0"
-                step="1000"
-              >
+              <input v-model="form.presupuesto_max" type="number" id="presupuesto_max" class="form-input"
+                placeholder="1000000" min="0" step="1000">
             </div>
             <div class="form-group">
               <label for="tipo_propiedad">Tipo de Propiedad</label>
@@ -131,41 +77,22 @@
               </select>
             </div>
           </div>
-          
+
           <div class="form-row">
             <div class="form-group">
               <label for="habitaciones">Habitaciones</label>
-              <input 
-                v-model="form.habitaciones" 
-                type="number" 
-                id="habitaciones" 
-                class="form-input"
-                placeholder="3"
-                min="0"
-              >
+              <input v-model="form.habitaciones" type="number" id="habitaciones" class="form-input" placeholder="3"
+                min="0">
             </div>
             <div class="form-group">
               <label for="banos">Baños</label>
-              <input 
-                v-model="form.banos" 
-                type="number" 
-                id="banos" 
-                class="form-input"
-                placeholder="2"
-                min="0"
-                step="0.5"
-              >
+              <input v-model="form.banos" type="number" id="banos" class="form-input" placeholder="2" min="0"
+                step="0.5">
             </div>
             <div class="form-group">
               <label for="metros_cuadrados">Metros Cuadrados</label>
-              <input 
-                v-model="form.metros_cuadrados" 
-                type="number" 
-                id="metros_cuadrados" 
-                class="form-input"
-                placeholder="120"
-                min="0"
-              >
+              <input v-model="form.metros_cuadrados" type="number" id="metros_cuadrados" class="form-input"
+                placeholder="120" min="0">
             </div>
           </div>
         </div>
@@ -197,18 +124,13 @@
               </select>
             </div>
           </div>
-          
+
           <div class="form-row">
             <div class="form-group">
               <label for="puntuacion_interes">Puntuación de Interés</label>
               <div class="interest-selector">
-                <button 
-                  v-for="i in 4" 
-                  :key="i"
-                  type="button"
-                  @click="form.puntuacion_interes = i"
-                  :class="['interest-btn', { active: form.puntuacion_interes >= i }]"
-                >
+                <button v-for="i in 4" :key="i" type="button" @click="form.puntuacion_interes = i"
+                  :class="['interest-btn', { active: form.puntuacion_interes >= i }]">
                   ⭐
                 </button>
                 <span class="interest-label">
@@ -217,16 +139,11 @@
               </div>
             </div>
           </div>
-          
+
           <div class="form-group">
             <label for="notas">Notas Adicionales</label>
-            <textarea 
-              v-model="form.notas" 
-              id="notas" 
-              class="form-textarea"
-              rows="4"
-              placeholder="Información adicional sobre el prospecto, preferencias, comentarios importantes..."
-            ></textarea>
+            <textarea v-model="form.notas" id="notas" class="form-textarea" rows="4"
+              placeholder="Información adicional sobre el prospecto, preferencias, comentarios importantes..."></textarea>
           </div>
         </div>
       </div>
@@ -236,8 +153,14 @@
         <button type="button" @click="$emit('cancel')" class="btn-secondary">
           Cancelar
         </button>
-        <button type="submit" :disabled="loading" class="btn-primary">
-          {{ loading ? 'Guardando...' : (prospecto ? 'Actualizar' : 'Guardar') }}
+        <button type="submit" :disabled="loading || isSubmitting" class="btn-primary" @click="preventDoubleSubmit">
+          <span v-if="loading || isSubmitting">
+            <span class="spinner"></span>
+            {{ prospecto ? 'Actualizando...' : 'Guardando...' }}
+          </span>
+          <span v-else>
+            {{ prospecto ? 'Actualizar' : 'Guardar' }}
+          </span>
         </button>
       </div>
     </form>
@@ -258,6 +181,7 @@ const props = defineProps({
 const emit = defineEmits(['saved', 'cancel'])
 
 const loading = ref(false)
+const isSubmitting = ref(false)
 const agentes = ref([])
 
 // Formulario reactivo
@@ -289,7 +213,7 @@ const loadAgentes = async () => {
       .select('id, nombre, email')
       .eq('activo', true)
       .order('nombre')
-    
+
     if (error) throw error
     agentes.value = data || []
   } catch (error) {
@@ -297,18 +221,79 @@ const loadAgentes = async () => {
   }
 }
 
+// Obtener el usuario actual y asignarlo como agente
+const setCurrentUserAsAgent = async () => {
+  try {
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+
+    if (userError) {
+      console.error('Error obteniendo usuario:', userError)
+      return
+    }
+
+    if (user) {
+      // Asignar el usuario actual como agente
+      form.agente_id = user.id
+      console.log('👤 Usuario asignado como agente:', user.id)
+    }
+  } catch (error) {
+    console.error('Error asignando usuario como agente:', error)
+  }
+}
+
 // Cargar datos del prospecto si se está editando
 onMounted(async () => {
   await loadAgentes()
-  if (props.prospecto) {
+
+  // Si es un nuevo prospecto, asignar el usuario actual
+  if (!props.prospecto) {
+    await setCurrentUserAsAgent()
+  } else {
+    // Si es edición, cargar los datos existentes
     Object.assign(form, props.prospecto)
   }
 })
 
+// Función para prevenir doble click
+const preventDoubleSubmit = (event) => {
+  if (loading.value || isSubmitting.value) {
+    event.preventDefault()
+    event.stopPropagation()
+    console.log('⚠️ Doble click prevenido')
+    return false
+  }
+}
+
 const saveProspecto = async () => {
+  // Prevenir múltiples envíos
+  if (loading.value || isSubmitting.value) {
+    console.log('⚠️ Ya se está guardando, ignorando envío duplicado')
+    return
+  }
+
   loading.value = true
-  
+  isSubmitting.value = true
+
   try {
+    // Verificar duplicados antes de guardar (solo para nuevos prospectos)
+    if (!props.prospecto) {
+      const { data: existingProspectos, error: checkError } = await supabase
+        .from('prospectos')
+        .select('id, nombre, apellido, email, telefono')
+        .eq('agente_id', form.agente_id)
+        .eq('nombre', form.nombre)
+        .eq('apellido', form.apellido)
+        .or(`email.eq.${form.email},telefono.eq.${form.telefono}`)
+
+      if (checkError) throw checkError
+
+      if (existingProspectos && existingProspectos.length > 0) {
+        alert('Ya existe un prospecto con el mismo nombre y datos de contacto. Por favor, verifica los datos.')
+        loading.value = false
+        return
+      }
+    }
+
     const prospectoData = {
       ...form,
       presupuesto_max: form.presupuesto_max ? parseFloat(form.presupuesto_max) : null,
@@ -324,14 +309,14 @@ const saveProspecto = async () => {
         .from('prospectos')
         .update(prospectoData)
         .eq('id', props.prospecto.id)
-      
+
       if (error) throw error
     } else {
       // Crear nuevo prospecto
       const { error } = await supabase
         .from('prospectos')
         .insert([prospectoData])
-      
+
       if (error) throw error
     }
 
@@ -341,6 +326,7 @@ const saveProspecto = async () => {
     alert('Error al guardar el prospecto. Por favor, intenta de nuevo.')
   } finally {
     loading.value = false
+    isSubmitting.value = false
   }
 }
 
@@ -412,7 +398,8 @@ const getInterestLabel = (score) => {
   font-size: 0.95rem;
 }
 
-.form-input, .form-textarea {
+.form-input,
+.form-textarea {
   padding: 12px 15px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
@@ -421,7 +408,8 @@ const getInterestLabel = (score) => {
   background: white;
 }
 
-.form-input:focus, .form-textarea:focus {
+.form-input:focus,
+.form-textarea:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -476,7 +464,8 @@ const getInterestLabel = (score) => {
   border-top: 1px solid #e0e0e0;
 }
 
-.btn-primary, .btn-secondary {
+.btn-primary,
+.btn-secondary {
   padding: 12px 25px;
   border-radius: 8px;
   font-weight: 500;
@@ -503,6 +492,30 @@ const getInterestLabel = (score) => {
   transform: none;
 }
 
+/* Spinner de carga */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Efecto de click deshabilitado */
+.btn-primary:disabled:hover {
+  transform: none;
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
 .btn-secondary {
   background: #f8f9fa;
   color: #666;
@@ -518,11 +531,11 @@ const getInterestLabel = (score) => {
   .form-row {
     grid-template-columns: 1fr;
   }
-  
+
   .form-actions {
     flex-direction: column;
   }
-  
+
   .interest-selector {
     justify-content: center;
   }

@@ -1,118 +1,87 @@
--- Políticas de autenticación para Casa Tracker
--- Ejecutar este script en el SQL Editor de Supabase después de configurar la autenticación
+-- Políticas de seguridad RLS (Row Level Security) para Casa Tracker
+-- Ejecutar este script en el SQL Editor de Supabase
 
--- Eliminar políticas existentes
+-- Eliminar políticas existentes si existen
 DROP POLICY IF EXISTS "Enable all operations for all users" ON prospectos;
 DROP POLICY IF EXISTS "Enable all operations for all users" ON seguimientos;
 DROP POLICY IF EXISTS "Enable all operations for all users" ON agentes;
 
--- Políticas para la tabla prospectos
--- Los usuarios solo pueden ver/editar prospectos de su agente
-CREATE POLICY "Users can view their own prospectos" ON prospectos
+-- Políticas para la tabla de prospectos
+-- Los usuarios solo pueden ver, insertar, actualizar y eliminar sus propios prospectos
+CREATE POLICY "Users can view own prospects" ON prospectos
+  FOR SELECT USING (agente_id = auth.uid());
+
+CREATE POLICY "Users can insert own prospects" ON prospectos
+  FOR INSERT WITH CHECK (agente_id = auth.uid());
+
+CREATE POLICY "Users can update own prospects" ON prospectos
+  FOR UPDATE USING (agente_id = auth.uid());
+
+CREATE POLICY "Users can delete own prospects" ON prospectos
+  FOR DELETE USING (agente_id = auth.uid());
+
+-- Políticas para la tabla de seguimientos
+-- Los usuarios solo pueden ver, insertar, actualizar y eliminar seguimientos de sus propios prospectos
+CREATE POLICY "Users can view own follow-ups" ON seguimientos
   FOR SELECT USING (
-    auth.uid() IN (
-      SELECT id FROM agentes WHERE email = auth.jwt() ->> 'email'
+    agente_id = auth.uid() OR 
+    prospecto_id IN (
+      SELECT id FROM prospectos WHERE agente_id = auth.uid()
     )
   );
 
-CREATE POLICY "Users can insert prospectos for their agente" ON prospectos
+CREATE POLICY "Users can insert own follow-ups" ON seguimientos
   FOR INSERT WITH CHECK (
-    auth.uid() IN (
-      SELECT id FROM agentes WHERE email = auth.jwt() ->> 'email'
+    agente_id = auth.uid() AND
+    prospecto_id IN (
+      SELECT id FROM prospectos WHERE agente_id = auth.uid()
     )
   );
 
-CREATE POLICY "Users can update their own prospectos" ON prospectos
+CREATE POLICY "Users can update own follow-ups" ON seguimientos
   FOR UPDATE USING (
-    auth.uid() IN (
-      SELECT id FROM agentes WHERE email = auth.jwt() ->> 'email'
+    agente_id = auth.uid() AND
+    prospecto_id IN (
+      SELECT id FROM prospectos WHERE agente_id = auth.uid()
     )
   );
 
-CREATE POLICY "Users can delete their own prospectos" ON prospectos
+CREATE POLICY "Users can delete own follow-ups" ON seguimientos
   FOR DELETE USING (
-    auth.uid() IN (
-      SELECT id FROM agentes WHERE email = auth.jwt() ->> 'email'
-    )
-  );
-
--- Políticas para la tabla seguimientos
-CREATE POLICY "Users can view seguimientos for their prospectos" ON seguimientos
-  FOR SELECT USING (
+    agente_id = auth.uid() AND
     prospecto_id IN (
-      SELECT id FROM prospectos WHERE agente_id IN (
-        SELECT id FROM agentes WHERE email = auth.jwt() ->> 'email'
-      )
+      SELECT id FROM prospectos WHERE agente_id = auth.uid()
     )
   );
 
-CREATE POLICY "Users can insert seguimientos for their prospectos" ON seguimientos
-  FOR INSERT WITH CHECK (
-    prospecto_id IN (
-      SELECT id FROM prospectos WHERE agente_id IN (
-        SELECT id FROM agentes WHERE email = auth.jwt() ->> 'email'
-      )
-    )
-  );
+-- Políticas para la tabla de agentes
+-- Los usuarios solo pueden ver y actualizar su propio perfil de agente
+CREATE POLICY "Users can view own agent profile" ON agentes
+  FOR SELECT USING (id = auth.uid());
 
-CREATE POLICY "Users can update seguimientos for their prospectos" ON seguimientos
-  FOR UPDATE USING (
-    prospecto_id IN (
-      SELECT id FROM prospectos WHERE agente_id IN (
-        SELECT id FROM agentes WHERE email = auth.jwt() ->> 'email'
-      )
-    )
-  );
+CREATE POLICY "Users can insert own agent profile" ON agentes
+  FOR INSERT WITH CHECK (id = auth.uid());
 
-CREATE POLICY "Users can delete seguimientos for their prospectos" ON seguimientos
-  FOR DELETE USING (
-    prospecto_id IN (
-      SELECT id FROM prospectos WHERE agente_id IN (
-        SELECT id FROM agentes WHERE email = auth.jwt() ->> 'email'
-      )
-    )
-  );
+CREATE POLICY "Users can update own agent profile" ON agentes
+  FOR UPDATE USING (id = auth.uid());
 
--- Políticas para la tabla agentes
-CREATE POLICY "Users can view their own agente profile" ON agentes
-  FOR SELECT USING (
-    email = auth.jwt() ->> 'email'
-  );
-
-CREATE POLICY "Users can update their own agente profile" ON agentes
-  FOR UPDATE USING (
-    email = auth.jwt() ->> 'email'
-  );
-
--- Función para crear automáticamente un perfil de agente cuando se registra un usuario
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger AS $$
+-- Función para crear automáticamente un registro de agente cuando se registra un usuario
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.agentes (id, nombre, email, activo)
+  INSERT INTO agentes (id, nombre, email, activo)
   VALUES (
-    new.id,
-    COALESCE(new.raw_user_meta_data->>'nombre', split_part(new.email, '@', 1)),
-    new.email,
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
+    NEW.email,
     true
   );
-  RETURN new;
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger para crear perfil de agente automáticamente
+-- Trigger para crear agente automáticamente
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
-
--- Política para permitir que los usuarios inserten su propio perfil de agente
-CREATE POLICY "Users can insert their own agente profile" ON agentes
-  FOR INSERT WITH CHECK (
-    id = auth.uid() AND email = auth.jwt() ->> 'email'
-  );
-
--- Actualizar el agente existente para que tenga el ID correcto
--- (Esto es solo para el agente de ejemplo que ya existe)
-UPDATE agentes 
-SET id = (SELECT id FROM auth.users WHERE email = 'agente@example.com' LIMIT 1)
-WHERE email = 'agente@example.com' AND id != (SELECT id FROM auth.users WHERE email = 'agente@example.com' LIMIT 1);
+  FOR EACH ROW EXECUTE FUNCTION handle_new_user();

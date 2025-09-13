@@ -64,6 +64,9 @@ const register = async (email, password) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth-redirect`
+      }
     })
     
     if (error) throw error

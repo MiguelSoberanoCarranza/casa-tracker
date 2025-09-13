@@ -1369,6 +1369,14 @@ onUnmounted(() => {
   color: white !important;
 }
 
+/* Estilos específicos para badges en el header */
+.prospecto-detalle-header .status-badge {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(10px);
+}
+
 .prospecto-detalle-header::before {
   content: '';
   position: absolute;

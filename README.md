@@ -180,3 +180,7 @@ Si tienes problemas o preguntas:
 ---
 
 ¡Disfruta gestionando tus prospectos de ventas de casas! 🏠✨
+
+## 🚀 Despliegue Automático en Vercel
+
+Este proyecto está configurado para desplegarse automáticamente en Vercel cuando se hace push a la rama main.

@@ -184,3 +184,8 @@ Si tienes problemas o preguntas:
 ## 🚀 Despliegue Automático en Vercel
 
 Este proyecto está configurado para desplegarse automáticamente en Vercel cuando se hace push a la rama main.
+
+## 🚀 Estado del Despliegue
+- Variables de entorno: ✅ Configuradas
+- Repositorio GitHub: ✅ Conectado
+- Entornos Vercel: ✅ Configurados

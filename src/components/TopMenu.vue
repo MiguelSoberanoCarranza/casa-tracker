@@ -41,7 +41,6 @@ const mobileMenuOpen = ref(false)
 const tabs = [
   { id: 'prospectos', name: 'Prospectos', icon: '👤' },
   { id: 'nuevo', name: 'Nuevo', icon: '✨' },
-  { id: 'seguimientos', name: 'Seguimientos', icon: '📋' },
   { id: 'recordatorios', name: 'Recordatorios', icon: '📅' }
 ]
 
@@ -56,12 +55,10 @@ const handleTabClick = (tabId) => {
 
 const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
-  console.log('Menú móvil:', mobileMenuOpen.value ? 'abierto' : 'cerrado')
 }
 
 const closeMobileMenu = () => {
   mobileMenuOpen.value = false
-  console.log('Menú móvil cerrado')
 }
 </script>
 
@@ -241,14 +238,51 @@ const closeMobileMenu = () => {
   opacity: 1;
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .desktop-menu {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+  }
+
+  .top-tab-button {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    min-height: 28px;
+  }
+
+  .top-tab-button .tab-text {
+    font-size: 0.7rem;
+  }
+
+  .mobile-menu-toggle {
+    display: none;
+  }
+}
+
+/* Mobile Large (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
   .desktop-menu {
     display: none !important;
   }
 
   .mobile-menu-toggle {
     display: flex !important;
+    width: 40px;
+    height: 40px;
+  }
+
+  .mobile-menu {
+    top: 70px;
+    right: 20px;
+    min-width: 250px;
+    max-width: 300px;
+  }
+
+  .mobile-tab-button {
+    padding: 14px 18px;
+    font-size: 0.95rem;
   }
 
   .mobile-overlay {
@@ -260,11 +294,78 @@ const closeMobileMenu = () => {
   }
 }
 
+/* Mobile Small (320px - 480px) */
 @media (max-width: 480px) {
+  .desktop-menu {
+    display: none !important;
+  }
+
+  .mobile-menu-toggle {
+    display: flex !important;
+    width: 36px;
+    height: 36px;
+    padding: 5px;
+  }
+
   .mobile-menu {
+    top: 60px;
+    right: 15px;
+    left: 15px;
+    min-width: auto;
+    max-width: none;
+    padding: 20px;
+  }
+
+  .mobile-tab-button {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+
+  .mobile-tab-button .tab-icon {
+    font-size: 0.9rem;
+  }
+
+  .mobile-tab-button .tab-text {
+    font-size: 0.8rem;
+  }
+
+  .mobile-overlay {
+    display: none;
+  }
+
+  .mobile-overlay.active {
+    display: block;
+  }
+}
+
+/* Extra Small Mobile (max-width: 320px) */
+@media (max-width: 320px) {
+  .mobile-menu-toggle {
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+  }
+
+  .mobile-menu {
+    top: 55px;
     right: 10px;
     left: 10px;
-    min-width: auto;
+    padding: 15px;
+  }
+
+  .mobile-tab-button {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+  }
+
+  .mobile-tab-button .tab-icon {
+    font-size: 0.85rem;
+  }
+
+  .mobile-tab-button .tab-text {
+    font-size: 0.75rem;
   }
 }
 </style>

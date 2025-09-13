@@ -217,7 +217,6 @@ const loadAgentes = async () => {
     if (error) throw error
     agentes.value = data || []
   } catch (error) {
-    console.error('Error cargando agentes:', error)
   }
 }
 
@@ -227,17 +226,14 @@ const setCurrentUserAsAgent = async () => {
     const { data: { user }, error: userError } = await supabase.auth.getUser()
 
     if (userError) {
-      console.error('Error obteniendo usuario:', userError)
       return
     }
 
     if (user) {
       // Asignar el usuario actual como agente
       form.agente_id = user.id
-      console.log('👤 Usuario asignado como agente:', user.id)
     }
   } catch (error) {
-    console.error('Error asignando usuario como agente:', error)
   }
 }
 
@@ -259,7 +255,6 @@ const preventDoubleSubmit = (event) => {
   if (loading.value || isSubmitting.value) {
     event.preventDefault()
     event.stopPropagation()
-    console.log('⚠️ Doble click prevenido')
     return false
   }
 }
@@ -267,7 +262,6 @@ const preventDoubleSubmit = (event) => {
 const saveProspecto = async () => {
   // Prevenir múltiples envíos
   if (loading.value || isSubmitting.value) {
-    console.log('⚠️ Ya se está guardando, ignorando envío duplicado')
     return
   }
 
@@ -322,7 +316,6 @@ const saveProspecto = async () => {
 
     emit('saved')
   } catch (error) {
-    console.error('Error guardando prospecto:', error)
     alert('Error al guardar el prospecto. Por favor, intenta de nuevo.')
   } finally {
     loading.value = false
@@ -527,17 +520,180 @@ const getInterestLabel = (score) => {
   border-color: #d0d0d0;
 }
 
-@media (max-width: 768px) {
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .form-row {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+
+  .form-section {
+    padding: 20px;
+  }
+
+  .form-section h3 {
+    font-size: 1.1rem;
+  }
+
+  .form-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile Large (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
   .form-row {
     grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .form-section {
+    padding: 20px;
+  }
+
+  .form-section h3 {
+    font-size: 1.1rem;
   }
 
   .form-actions {
     flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 0.9rem;
   }
 
   .interest-selector {
     justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .interest-btn {
+    padding: 6px 8px;
+    font-size: 1rem;
+  }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+  .form-container {
+    padding: 0;
+  }
+
+  .prospecto-form {
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .form-section {
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .form-section h3 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+
+  .form-input,
+  .form-textarea {
+    padding: 10px 12px;
+    font-size: 16px;
+    /* Previene zoom en iOS */
+    border-radius: 6px;
+  }
+
+  .form-textarea {
+    min-height: 80px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+
+  .interest-selector {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .interest-btn {
+    padding: 6px 8px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+  }
+
+  .interest-label {
+    font-size: 0.85rem;
+  }
+}
+
+/* Extra Small Mobile (max-width: 320px) */
+@media (max-width: 320px) {
+  .prospecto-form {
+    padding: 15px;
+  }
+
+  .form-section {
+    padding: 12px;
+  }
+
+  .form-section h3 {
+    font-size: 0.95rem;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+  }
+
+  .form-input,
+  .form-textarea {
+    padding: 8px 10px;
+    font-size: 16px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .interest-btn {
+    padding: 5px 7px;
+    font-size: 0.85rem;
   }
 }
 </style>

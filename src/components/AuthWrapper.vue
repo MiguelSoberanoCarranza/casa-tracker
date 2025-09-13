@@ -150,7 +150,41 @@ const handleLogout = async () => {
   z-index: 1;
 }
 
-@media (max-width: 768px) {
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .top-bar {
+    height: 10vh;
+  }
+
+  .container {
+    padding: 15px;
+    height: 90vh;
+  }
+
+  .top-bar-content {
+    padding: 0 20px;
+  }
+
+  .logo-section h1 {
+    font-size: 1.6rem;
+  }
+
+  .user-info {
+    font-size: 0.85rem;
+  }
+
+  .logout-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .main-content {
+    padding: 25px;
+  }
+}
+
+/* Mobile Large (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
   .top-bar {
     height: 12vh;
   }
@@ -163,7 +197,7 @@ const handleLogout = async () => {
   .top-bar-content {
     padding: 0 15px;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
   }
 
   .logo-section h1 {
@@ -172,11 +206,120 @@ const handleLogout = async () => {
 
   .top-menu {
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .user-info {
+    font-size: 0.8rem;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-end;
+  }
+
+  .logout-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
 
   .main-content {
     padding: 15px;
+  }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+  .top-bar {
+    height: 14vh;
+    min-height: 60px;
+  }
+
+  .container {
+    padding: 8px;
+    height: 86vh;
+  }
+
+  .top-bar-content {
+    padding: 0 12px;
+    flex-direction: column;
+    gap: 6px;
+    height: 100%;
+    justify-content: center;
+  }
+
+  .logo-section h1 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .top-menu {
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .user-info {
+    font-size: 0.75rem;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .user-info span {
+    word-break: break-all;
+    max-width: 150px;
+  }
+
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    border-radius: 6px;
+  }
+
+  .main-content {
+    padding: 12px;
+    border-radius: 15px;
+  }
+}
+
+/* Extra Small Mobile (max-width: 320px) */
+@media (max-width: 320px) {
+  .top-bar {
+    height: 16vh;
+    min-height: 65px;
+  }
+
+  .container {
+    padding: 5px;
+    height: 84vh;
+  }
+
+  .top-bar-content {
+    padding: 0 10px;
+    gap: 4px;
+  }
+
+  .logo-section h1 {
+    font-size: 1.1rem;
+  }
+
+  .user-info {
+    font-size: 0.7rem;
+  }
+
+  .user-info span {
+    max-width: 120px;
+  }
+
+  .logout-btn {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+  }
+
+  .main-content {
+    padding: 10px;
+    border-radius: 12px;
   }
 }
 </style>

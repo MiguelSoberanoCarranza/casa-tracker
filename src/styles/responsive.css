@@ -1,0 +1,373 @@
+/* Estilos globales para responsividad */
+/* Utilidades y mejoras para todos los dispositivos */
+
+/* Reset y base para móviles */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Utilidades de responsividad */
+.hidden-mobile {
+    display: block;
+}
+
+.hidden-tablet {
+    display: block;
+}
+
+.hidden-desktop {
+    display: none;
+}
+
+.visible-mobile {
+    display: none;
+}
+
+.visible-tablet {
+    display: none;
+}
+
+.visible-desktop {
+    display: block;
+}
+
+/* Contenedores responsivos */
+.container-responsive {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Grid responsivo */
+.grid-responsive {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: 1fr;
+}
+
+/* Flex responsivo */
+.flex-responsive {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Texto responsivo */
+.text-responsive {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* Botones responsivos */
+.btn-responsive {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Formularios responsivos */
+.form-responsive {
+    width: 100%;
+}
+
+.form-group-responsive {
+    margin-bottom: 20px;
+}
+
+.form-input-responsive {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 16px;
+    /* Previene zoom en iOS */
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+}
+
+.form-input-responsive:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Cards responsivos */
+.card-responsive {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Spacing responsivo */
+.spacing-responsive {
+    padding: 20px;
+    margin: 20px 0;
+}
+
+/* Breakpoints específicos */
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .container-responsive {
+        padding: 0 15px;
+    }
+
+    .grid-responsive {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    .flex-responsive {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .text-responsive {
+        font-size: 0.95rem;
+    }
+
+    .btn-responsive {
+        width: auto;
+        padding: 10px 18px;
+        font-size: 0.9rem;
+    }
+
+    .card-responsive {
+        padding: 18px;
+    }
+
+    .spacing-responsive {
+        padding: 15px;
+        margin: 15px 0;
+    }
+
+    .hidden-tablet {
+        display: none;
+    }
+
+    .visible-tablet {
+        display: block;
+    }
+}
+
+/* Mobile Large (481px - 768px) */
+@media (max-width: 768px) and (min-width: 481px) {
+    .container-responsive {
+        padding: 0 12px;
+    }
+
+    .grid-responsive {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .flex-responsive {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .text-responsive {
+        font-size: 0.9rem;
+    }
+
+    .btn-responsive {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 0.9rem;
+    }
+
+    .card-responsive {
+        padding: 16px;
+        margin-bottom: 15px;
+    }
+
+    .spacing-responsive {
+        padding: 12px;
+        margin: 12px 0;
+    }
+
+    .hidden-mobile {
+        display: none;
+    }
+
+    .visible-mobile {
+        display: block;
+    }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+    .container-responsive {
+        padding: 0 10px;
+    }
+
+    .grid-responsive {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .flex-responsive {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .text-responsive {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    .btn-responsive {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+    }
+
+    .card-responsive {
+        padding: 14px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+    }
+
+    .spacing-responsive {
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    .form-input-responsive {
+        padding: 10px 12px;
+        font-size: 16px;
+        border-radius: 6px;
+    }
+
+    .form-group-responsive {
+        margin-bottom: 15px;
+    }
+}
+
+/* Extra Small Mobile (max-width: 320px) */
+@media (max-width: 320px) {
+    .container-responsive {
+        padding: 0 8px;
+    }
+
+    .grid-responsive {
+        gap: 8px;
+    }
+
+    .flex-responsive {
+        gap: 8px;
+    }
+
+    .text-responsive {
+        font-size: 0.8rem;
+    }
+
+    .btn-responsive {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+
+    .card-responsive {
+        padding: 12px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+    }
+
+    .spacing-responsive {
+        padding: 8px;
+        margin: 8px 0;
+    }
+
+    .form-input-responsive {
+        padding: 8px 10px;
+    }
+
+    .form-group-responsive {
+        margin-bottom: 12px;
+    }
+}
+
+/* Mejoras para touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .btn-responsive {
+        min-height: 44px;
+        /* Tamaño mínimo recomendado para touch */
+    }
+
+    .form-input-responsive {
+        min-height: 44px;
+    }
+
+    .card-responsive {
+        cursor: pointer;
+    }
+
+    .card-responsive:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+}
+
+/* Mejoras para pantallas de alta densidad */
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+    .card-responsive {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+}
+
+/* Mejoras para modo oscuro (si se implementa en el futuro) */
+@media (prefers-color-scheme: dark) {
+    .card-responsive {
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+
+    .form-input-responsive {
+        background: #2a2a2a;
+        border-color: #404040;
+        color: #ffffff;
+    }
+}
+
+/* Mejoras para reducir movimiento (accesibilidad) */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Mejoras para contraste alto */
+@media (prefers-contrast: high) {
+    .card-responsive {
+        border: 2px solid #000000;
+    }
+
+    .form-input-responsive {
+        border-width: 3px;
+    }
+}

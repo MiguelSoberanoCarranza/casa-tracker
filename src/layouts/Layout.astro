@@ -14,8 +14,12 @@ const { title, requireAuth = true } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="Aplicación de seguimiento de prospectos de ventas de casas" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/styles/responsive.css" />
     <title>{title}</title>
     <style>
       * {
@@ -72,7 +76,23 @@ const { title, requireAuth = true } = Astro.props;
       }
       
       
-      @media (max-width: 768px) {
+      /* Tablet (768px - 1024px) */
+      @media (max-width: 1024px) and (min-width: 769px) {
+        .top-bar {
+          height: 10vh;
+        }
+        
+        .top-bar-content {
+          padding: 0 20px;
+        }
+        
+        .top-bar .logo-section h1 {
+          font-size: 1.6rem;
+        }
+      }
+
+      /* Mobile Large (481px - 768px) */
+      @media (max-width: 768px) and (min-width: 481px) {
         .top-bar {
           height: 12vh;
         }
@@ -80,7 +100,7 @@ const { title, requireAuth = true } = Astro.props;
         .top-bar-content {
           padding: 0 15px;
           flex-direction: column;
-          gap: 5px;
+          gap: 8px;
         }
         
         .top-bar .logo-section h1 {
@@ -90,6 +110,49 @@ const { title, requireAuth = true } = Astro.props;
         .top-menu {
           width: 100%;
           justify-content: center;
+        }
+      }
+
+      /* Mobile Small (320px - 480px) */
+      @media (max-width: 480px) {
+        .top-bar {
+          height: 14vh;
+          min-height: 60px;
+        }
+        
+        .top-bar-content {
+          padding: 0 12px;
+          flex-direction: column;
+          gap: 6px;
+          height: 100%;
+          justify-content: center;
+        }
+        
+        .top-bar .logo-section h1 {
+          font-size: 1.2rem;
+          text-align: center;
+        }
+        
+        .top-menu {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      /* Extra Small Mobile (max-width: 320px) */
+      @media (max-width: 320px) {
+        .top-bar {
+          height: 16vh;
+          min-height: 65px;
+        }
+        
+        .top-bar-content {
+          padding: 0 10px;
+          gap: 4px;
+        }
+        
+        .top-bar .logo-section h1 {
+          font-size: 1.1rem;
         }
       }
     </style>

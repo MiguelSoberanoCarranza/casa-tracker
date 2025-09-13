@@ -561,6 +561,15 @@ const formatDate = (date) => {
 // Función para cambiar pestaña desde el TopMenu
 const handleTabChange = (tabId) => {
   activeTab.value = tabId
+
+  // Si se va a la pestaña 'nuevo', limpiar el formulario
+  if (tabId === 'nuevo') {
+    selectedProspecto.value = null
+    showAddForm.value = true
+  } else {
+    // Si se va a otra pestaña, cerrar el formulario
+    showAddForm.value = false
+  }
 }
 
 // Función para alternar la visualización de seguimientos

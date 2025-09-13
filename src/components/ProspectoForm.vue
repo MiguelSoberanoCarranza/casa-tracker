@@ -168,7 +168,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { supabase } from '../lib/supabase.js'
 
 const props = defineProps({
@@ -237,17 +237,48 @@ const setCurrentUserAsAgent = async () => {
   }
 }
 
+// Función para resetear el formulario
+const resetForm = () => {
+  Object.assign(form, {
+    nombre: '',
+    apellido: '',
+    email: '',
+    telefono: '',
+    direccion: '',
+    ciudad: '',
+    estado: '',
+    codigo_postal: '',
+    presupuesto_max: null,
+    tipo_propiedad: '',
+    habitaciones: null,
+    banos: null,
+    metros_cuadrados: null,
+    status: 'nuevo',
+    agente_id: '',
+    puntuacion_interes: 1,
+    notas: ''
+  })
+}
+
+// Función para cargar datos del prospecto
+const loadProspectoData = async () => {
+  if (!props.prospecto) {
+    // Nuevo prospecto - resetear formulario y asignar usuario actual
+    resetForm()
+    await setCurrentUserAsAgent()
+  } else {
+    // Edición - cargar los datos existentes
+    Object.assign(form, props.prospecto)
+  }
+}
+
+// Watch para reaccionar a cambios en la prop prospecto
+watch(() => props.prospecto, loadProspectoData, { immediate: false })
+
 // Cargar datos del prospecto si se está editando
 onMounted(async () => {
   await loadAgentes()
-
-  // Si es un nuevo prospecto, asignar el usuario actual
-  if (!props.prospecto) {
-    await setCurrentUserAsAgent()
-  } else {
-    // Si es edición, cargar los datos existentes
-    Object.assign(form, props.prospecto)
-  }
+  await loadProspectoData()
 })
 
 // Función para prevenir doble click

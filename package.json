@@ -1,7 +1,7 @@
 {
   "name": "casa-tracker",
   "version": "1.0.0",
-  "description": "Aplicación de seguimiento de prospectos de ventas de casas",
+  "description": "Aplicación de seguimiento de prospectos de ventas de casas - Vercel Deploy",
   "type": "module",
   "scripts": {
     "dev": "astro dev",

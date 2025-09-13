@@ -76,6 +76,27 @@ const register = async (email, password) => {
   }
 }
 
+// Función para login con Google
+const loginWithGoogle = async () => {
+  try {
+    loading.value = true
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth-redirect`
+      }
+    })
+    
+    if (error) throw error
+    
+    return { success: true, data }
+  } catch (error) {
+    return { success: false, error: error.message }
+  } finally {
+    loading.value = false
+  }
+}
+
 // Función para resetear contraseña
 const resetPassword = async (email) => {
   try {
@@ -147,6 +168,7 @@ export const useAuth = () => {
     
     // Métodos
     login,
+    loginWithGoogle,
     logout,
     register,
     resetPassword,

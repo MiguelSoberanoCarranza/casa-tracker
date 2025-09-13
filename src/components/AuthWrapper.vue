@@ -4,7 +4,7 @@
     <div v-if="loading" class="loading-auth">
       <div>Verificando autenticación...</div>
     </div>
-    
+
     <!-- Contenido principal -->
     <div v-else-if="isAuthenticated">
       <!-- Barra superior fija -->
@@ -31,7 +31,7 @@
         </main>
       </div>
     </div>
-    
+
     <!-- Redirigir a login si no está autenticado -->
     <div v-else>
       <div class="loading-auth">
@@ -147,33 +147,34 @@ const handleLogout = async () => {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  z-index: 1;
 }
 
 @media (max-width: 768px) {
   .top-bar {
     height: 12vh;
   }
-  
+
   .container {
     padding: 10px;
     height: 88vh;
   }
-  
+
   .top-bar-content {
     padding: 0 15px;
     flex-direction: column;
     gap: 5px;
   }
-  
+
   .logo-section h1 {
     font-size: 1.4rem;
   }
-  
+
   .top-menu {
     width: 100%;
     justify-content: center;
   }
-  
+
   .main-content {
     padding: 15px;
   }

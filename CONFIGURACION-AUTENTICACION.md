@@ -36,7 +36,44 @@ PUBLIC_SUPABASE_ANON_KEY=tu_clave_anonima_de_supabase
    - En Authentication > Settings, asegúrate de que "Enable email confirmations" esté activado
    - Opcional: Configura un template de email personalizado
 
-### 3. Configurar la Base de Datos
+5. **Configura Google OAuth (Recomendado):**
+   - Ve a Authentication > Providers
+   - Habilita Google como proveedor
+   - Configura las credenciales de Google:
+     - **Client ID:** Obtén esto de Google Cloud Console
+     - **Client Secret:** Obtén esto de Google Cloud Console
+   - **Redirect URL:** `https://tu-proyecto.supabase.co/auth/v1/callback`
+   - Guarda la configuración
+
+### 3. Configurar Google OAuth (Paso a Paso)
+
+#### Crear un proyecto en Google Cloud Console:
+
+1. **Ve a [Google Cloud Console](https://console.cloud.google.com/)**
+2. **Crea un nuevo proyecto o selecciona uno existente**
+3. **Habilita la Google+ API:**
+   - Ve a "APIs & Services" > "Library"
+   - Busca "Google+ API" y habilítala
+4. **Crea credenciales OAuth 2.0:**
+   - Ve a "APIs & Services" > "Credentials"
+   - Haz clic en "Create Credentials" > "OAuth 2.0 Client IDs"
+   - Selecciona "Web application"
+   - Configura las URLs autorizadas:
+     - **Authorized JavaScript origins:** `http://localhost:4321` (desarrollo) y `https://tu-dominio.com` (producción)
+     - **Authorized redirect URIs:** `https://tu-proyecto.supabase.co/auth/v1/callback`
+   - Copia el **Client ID** y **Client Secret**
+
+#### Configurar en Supabase:
+
+1. **Ve a tu proyecto de Supabase**
+2. **Navega a Authentication > Providers**
+3. **Habilita Google:**
+   - Toggle "Enable sign in with Google"
+   - Pega tu **Client ID** de Google
+   - Pega tu **Client Secret** de Google
+   - Guarda los cambios
+
+### 4. Configurar la Base de Datos
 
 #### Opción A: Base de datos nueva (recomendado)
 1. **Ejecutar el esquema principal:**
@@ -73,8 +110,24 @@ Si ya ejecutaste el esquema anteriormente y tienes errores como "trigger already
    - Revisa tu email para confirmar la cuenta
 
 4. **Inicia sesión:**
-   - Usa las credenciales que acabas de crear
+   - **Opción 1:** Usa las credenciales que acabas de crear
+   - **Opción 2:** Haz clic en "Continuar con Google" (recomendado)
    - Deberías ser redirigido al dashboard
+
+## 🚀 Ventajas del Login con Google
+
+### ✅ Beneficios para los usuarios:
+- **Sin confirmación por email** - Acceso inmediato
+- **Sin recordar contraseñas** - Usa tu cuenta de Google
+- **Más seguro** - Autenticación de dos factores de Google
+- **Más rápido** - Un solo clic para iniciar sesión
+- **Confiable** - Usa una plataforma conocida y segura
+
+### ✅ Beneficios para el desarrollador:
+- **Menos soporte** - No hay problemas de contraseñas olvidadas
+- **Mejor experiencia** - Los usuarios pueden empezar inmediatamente
+- **Más conversiones** - Menos fricción en el registro
+- **Menos spam** - Google filtra automáticamente
 
 ## 🔧 Funcionalidades de Autenticación
 
@@ -82,6 +135,7 @@ Si ya ejecutaste el esquema anteriormente y tienes errores como "trigger already
 
 - **Registro de usuarios** con confirmación por email
 - **Inicio de sesión** con email y contraseña
+- **Inicio de sesión con Google** - Sin necesidad de confirmación por email
 - **Protección de rutas** - solo usuarios autenticados pueden acceder
 - **Logout** con limpieza de sesión
 - **Políticas RLS** - cada usuario solo ve sus propios datos

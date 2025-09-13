@@ -135,6 +135,30 @@ export const prerender = false;
       text-decoration: underline;
     }
     
+    .separator {
+      margin: 25px 0;
+      text-align: center;
+      position: relative;
+    }
+    
+    .separator::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #e0e0e0;
+    }
+    
+    .separator span {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 0 15px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    
     .loading {
       display: inline-block;
       width: 20px;
@@ -196,6 +220,7 @@ export const prerender = false;
         <span id="login-loading" class="loading hidden"></span>
       </button>
     </form>
+    
     
     <!-- Formulario de registro -->
     <form id="register-form" class="hidden">
@@ -311,6 +336,7 @@ export const prerender = false;
         e.preventDefault()
         toggleForms()
       })
+      
       
       // Manejar login
       loginForm.addEventListener('submit', async (e) => {

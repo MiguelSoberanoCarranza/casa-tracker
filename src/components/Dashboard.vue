@@ -1426,12 +1426,15 @@ onUnmounted(() => {
 
 .star {
   font-size: 1rem;
-  opacity: 0.3;
-  transition: opacity 0.3s ease;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  color: #d4d4d8;
 }
 
 .star.filled {
   opacity: 1;
+  color: #fbbf24;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
 }
 
 .last-update {
@@ -1516,12 +1519,15 @@ onUnmounted(() => {
 
 .star {
   font-size: 0.9rem;
-  opacity: 0.3;
-  transition: opacity 0.3s ease;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+  color: #d4d4d8;
 }
 
 .star.filled {
   opacity: 1;
+  color: #fbbf24;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
 }
 
 .contact-info {
@@ -2036,7 +2042,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   height: 3px;
-  
+
 }
 
 .info-card:hover {
@@ -2478,9 +2484,7 @@ onUnmounted(() => {
   .info-grid {
     grid-template-columns: 1fr;
     gap: 15px;
-  }
-
-  .info-card {
+  }.info-card {
     padding: 14px;
   }
 

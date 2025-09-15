@@ -4,7 +4,10 @@
       <div class="form-grid">
         <!-- Información Personal -->
         <div class="form-section">
-          <h3>👤 Información Personal</h3>
+          <h3>
+            <User class="section-icon" size="20" />
+            Información Personal
+          </h3>
           <div class="form-row">
             <div class="form-group">
               <label for="nombre">Nombre *</label>
@@ -32,7 +35,10 @@
 
         <!-- Ubicación -->
         <div class="form-section">
-          <h3>📍 Ubicación</h3>
+          <h3>
+            <MapPin class="section-icon" size="20" />
+            Ubicación
+          </h3>
           <div class="form-group">
             <label for="direccion">Dirección</label>
             <input v-model="form.direccion" type="text" id="direccion" class="form-input"
@@ -57,7 +63,10 @@
 
         <!-- Información de la Propiedad -->
         <div class="form-section">
-          <h3>🏠 Información de la Propiedad</h3>
+          <h3>
+            <Home class="section-icon" size="20" />
+            Información de la Propiedad
+          </h3>
           <div class="form-row">
             <div class="form-group">
               <label for="presupuesto_max">Presupuesto Máximo</label>
@@ -99,7 +108,10 @@
 
         <!-- Seguimiento y Calificación -->
         <div class="form-section">
-          <h3>📊 Seguimiento y Calificación</h3>
+          <h3>
+            <BarChart3 class="section-icon" size="20" />
+            Seguimiento y Calificación
+          </h3>
           <div class="form-row">
             <div class="form-group">
               <label for="status">Estado Actual</label>
@@ -135,10 +147,10 @@
             <div class="form-group">
               <label for="puntuacion_interes">Puntuación de Interés</label>
               <div class="interest-selector">
-                <button v-for="i in 4" :key="i" type="button" @click="form.puntuacion_interes = i"
-                  :class="['interest-btn', { active: form.puntuacion_interes >= i }]">
-                  ⭐
-                </button>
+                <div class="stars-modern">
+                  <Star v-for="i in 4" :key="i" :class="['star-modern', { filled: i <= form.puntuacion_interes }]" 
+                    size="20" @click="form.puntuacion_interes = i" />
+                </div>
                 <span class="interest-label">
                   {{ getInterestLabel(form.puntuacion_interes) }}
                 </span>
@@ -157,6 +169,7 @@
       <!-- Botones de acción -->
       <div class="form-actions">
         <button type="button" @click="$emit('cancel')" class="btn-secondary">
+          <X class="btn-icon" size="16" />
           Cancelar
         </button>
         <button v-if="prospecto" type="button" @click="deleteProspecto" class="btn-danger"
@@ -166,7 +179,8 @@
             Eliminando...
           </span>
           <span v-else>
-            🗑️ Eliminar
+            <Trash2 class="btn-icon" size="16" />
+            Eliminar
           </span>
         </button>
         <button type="submit" :disabled="loading || isSubmitting" class="btn-primary" @click="preventDoubleSubmit">
@@ -175,6 +189,7 @@
             {{ prospecto ? 'Actualizando...' : 'Guardando...' }}
           </span>
           <span v-else>
+            <Save class="btn-icon" size="16" />
             {{ prospecto ? 'Actualizar' : 'Guardar' }}
           </span>
         </button>
@@ -186,6 +201,16 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
 import { supabase } from '../lib/supabase.js'
+import { 
+  User, 
+  MapPin, 
+  Home, 
+  BarChart3, 
+  Star, 
+  Trash2, 
+  Save, 
+  X
+} from 'lucide-vue-next'
 
 const props = defineProps({
   prospecto: {
@@ -453,6 +478,12 @@ const deleteProspecto = async () => {
   gap: 8px;
 }
 
+/* Iconos de sección */
+.section-icon {
+  color: #667eea;
+  flex-shrink: 0;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -501,30 +532,34 @@ const deleteProspecto = async () => {
 .interest-selector {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
   flex-wrap: wrap;
 }
 
-.interest-btn {
-  background: none;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 1.2rem;
+/* Estilos de botones de interés eliminados - ahora usamos estrellas directas */
+
+/* Contenedor de estrellas - estilos estándar del Dashboard */
+.stars-modern {
+  display: flex;
+  gap: 2px;
+}
+
+/* Iconos de estrellas - estilos estándar star-modern */
+.star-modern {
+  opacity: 0.3;
   transition: all 0.3s ease;
-  background: white;
+  color: #d4d4d8;
+  cursor: pointer;
 }
 
-.interest-btn:hover {
-  border-color: #667eea;
-  background: #f8f9ff;
+.star-modern.filled {
+  opacity: 1;
+  color: #fbbf24;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
 }
 
-.interest-btn.active {
-  border-color: #667eea;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+.star-modern:hover {
+  opacity: 0.6;
 }
 
 .interest-label {
@@ -556,6 +591,11 @@ const deleteProspecto = async () => {
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+/* Iconos de botones */
+.btn-icon {
+  flex-shrink: 0;
 }
 
 .btn-primary {
